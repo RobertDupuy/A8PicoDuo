@@ -1,0 +1,6 @@
+READ sector 1 rc 0 data 00 01 00 07 09 07 4c a0 c6 PC f329
+READ sector 2 rc 0 data 55 55 fc 00 04 00 07 15 07 PC c7d8
+READ sector 3 rc 0 data 03 a9 21 52 00 00 00 00 00 PC c874
+READ sector 4 rc 0 data 55 55 fc 8d 05 03 a9 83 8d PC c7df
+-ntsc library A: frame 32 PC 085a reads 23 PORTB fe BOOT 2; markers a1 a2 a3 01 01 88 01 01 5a a4
+PASS: actual CAS/FatFs/ATR code + Atari800 CPU/ANTIC; low-memory boot, continuation, CASINI, CIO C: partial block+EOF, raw SIO and RBLOKV; zero flash writes.

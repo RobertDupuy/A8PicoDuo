@@ -1,0 +1,3 @@
+mountFlashFS() - magic bytes not found
+flash_fs_create()
+PASS: 91,392 sector writes, three complete fill/read/reboot cycles, 16 MiB physical bounds, firmware protected, invalid/duplicate map rejected; data-block erases 2..3

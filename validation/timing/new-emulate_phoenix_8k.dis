@@ -1,0 +1,66 @@
+
+a8duo-cas/build/engine/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+2000101c <emulate_phoenix_8k>:
+2000101c:	22d0      	movs	r2, #208	@ 0xd0
+2000101e:	2380      	movs	r3, #128	@ 0x80
+20001020:	b5f0      	push	{r4, r5, r6, r7, lr}
+20001022:	46ce      	mov	lr, r9
+20001024:	4647      	mov	r7, r8
+20001026:	0612      	lsls	r2, r2, #24
+20001028:	04db      	lsls	r3, r3, #19
+2000102a:	b580      	push	{r7, lr}
+2000102c:	6193      	str	r3, [r2, #24]
+2000102e:	2380      	movs	r3, #128	@ 0x80
+20001030:	051b      	lsls	r3, r3, #20
+20001032:	4699      	mov	r9, r3
+20001034:	6153      	str	r3, [r2, #20]
+20001036:	4b14      	ldr	r3, [pc, #80]	@ (20001088 <emulate_phoenix_8k+0x6c>)
+20001038:	2180      	movs	r1, #128	@ 0x80
+2000103a:	2480      	movs	r4, #128	@ 0x80
+2000103c:	2680      	movs	r6, #128	@ 0x80
+2000103e:	20ff      	movs	r0, #255	@ 0xff
+20001040:	2501      	movs	r5, #1
+20001042:	469c      	mov	ip, r3
+20001044:	03c9      	lsls	r1, r1, #15
+20001046:	04a4      	lsls	r4, r4, #18
+20001048:	03b6      	lsls	r6, r6, #14
+2000104a:	0340      	lsls	r0, r0, #13
+2000104c:	6853      	ldr	r3, [r2, #4]
+2000104e:	420b      	tst	r3, r1
+20001050:	d0fc      	beq.n	2000104c <emulate_phoenix_8k+0x30>
+20001052:	4223      	tst	r3, r4
+20001054:	d112      	bne.n	2000107c <emulate_phoenix_8k+0x60>
+20001056:	2d00      	cmp	r5, #0
+20001058:	d010      	beq.n	2000107c <emulate_phoenix_8k+0x60>
+2000105a:	6250      	str	r0, [r2, #36]	@ 0x24
+2000105c:	6917      	ldr	r7, [r2, #16]
+2000105e:	04db      	lsls	r3, r3, #19
+20001060:	46b8      	mov	r8, r7
+20001062:	4667      	mov	r7, ip
+20001064:	0cdb      	lsrs	r3, r3, #19
+20001066:	5cfb      	ldrb	r3, [r7, r3]
+20001068:	4647      	mov	r7, r8
+2000106a:	035b      	lsls	r3, r3, #13
+2000106c:	407b      	eors	r3, r7
+2000106e:	4003      	ands	r3, r0
+20001070:	61d3      	str	r3, [r2, #28]
+20001072:	6853      	ldr	r3, [r2, #4]
+20001074:	420b      	tst	r3, r1
+20001076:	d1fc      	bne.n	20001072 <emulate_phoenix_8k+0x56>
+20001078:	6290      	str	r0, [r2, #40]	@ 0x28
+2000107a:	e7e7      	b.n	2000104c <emulate_phoenix_8k+0x30>
+2000107c:	4233      	tst	r3, r6
+2000107e:	d1f8      	bne.n	20001072 <emulate_phoenix_8k+0x56>
+20001080:	464b      	mov	r3, r9
+20001082:	2500      	movs	r5, #0
+20001084:	6193      	str	r3, [r2, #24]
+20001086:	e7f4      	b.n	20001072 <emulate_phoenix_8k+0x56>
+20001088:	20005b60 	.word	0x20005b60

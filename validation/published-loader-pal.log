@@ -1,0 +1,9 @@
+Source: https://atariwiki.org/wiki/attach/Boot%20from%20Cassette/Binary_Loader_BL-C_0.2.cas
+Raw SHA256: 3ccf315981e667ed3398dffd9790654e4ec96ebaaa291173ca43d00ac621673f
+Container conversion: six 128-byte raw boot records, standard checksum/EOF, appended synthetic XEX.
+Published BL/C 0.2 loader in FUJI container, -pal library B: frame 62 PC 2005 reads 19 marker 5c
+PASS: independent loader boots, accepts A, reads appended binary through C:, executes RUNAD; zero storage writes.
+READ sector 1 rc 0 data 00 01 00 07 09 07 4c a0 c6 PC f329
+READ sector 2 rc 0 data 55 55 fc 00 06 00 07 0b 07 PC c7d2
+READ sector 3 rc 0 data 79 20 42 e7 00 00 00 00 00 PC c87e
+READ sector 4 rc 0 data 55 55 fc 69 6e 61 72 79 20 PC c879

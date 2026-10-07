@@ -1,0 +1,16 @@
+{
+  "screen_width": 160,
+  "screen_height": 88,
+  "world_width": 152,
+  "world_left": 4,
+  "source_width": 550,
+  "source_height": 350,
+  "source_top": 25,
+  "player_width": 4,
+  "player_height": 4,
+  "player_half_original_pixels": 7.5,
+  "top_blank_scanlines": 24,
+  "hud_scanlines": 8,
+  "first_antic_scanline": 8,
+  "protocol_version": 3
+}

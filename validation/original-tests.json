@@ -1,0 +1,7 @@
+{
+  "levels": 30,
+  "enemy_positions_compared": 20178,
+  "max_coordinate_error_original_pixels": 3.3612382821957e-05,
+  "simulation_hz": 30,
+  "checks": "coin quota, all goals/transitions, all checkpoint spawns, death, coin collection, pause, mute, restart, PAL/NTSC rate, malformed packets"
+}

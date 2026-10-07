@@ -1,0 +1,27 @@
+Rejected bad-checksum.cas: CAS checksum error
+Rejected turbo.cas: Turbo/FSK CAS not supported
+Rejected fsk.cas: Turbo/FSK CAS not supported
+Rejected truncated.cas: Truncated CAS chunk
+Rejected missing-header.cas: Missing CAS FUJI header
+Rejected bad-baud.cas: Invalid CAS baud chunk
+Rejected unknown.cas: Unsupported CAS chunk
+Rejected empty.cas: Incomplete boot CAS
+Rejected too-many.cas: CAS exceeds 4096 records
+Rejected empty-partial.cas: CAS has no boot header
+Rejected bad-address-047f.cas: CAS boot address unsupported
+Rejected bad-address-bf80.cas: CAS boot address unsupported
+Rejected bad-address-ff80.cas: CAS boot address unsupported
+Rejected bad-checksum.cas: CAS checksum error
+Rejected turbo.cas: Turbo/FSK CAS not supported
+Rejected fsk.cas: Turbo/FSK CAS not supported
+Rejected truncated.cas: Truncated CAS chunk
+Rejected missing-header.cas: Missing CAS FUJI header
+Rejected bad-baud.cas: Invalid CAS baud chunk
+Rejected unknown.cas: Unsupported CAS chunk
+Rejected empty.cas: Incomplete boot CAS
+Rejected too-many.cas: CAS exceeds 4096 records
+Rejected empty-partial.cas: CAS has no boot header
+Rejected bad-address-047f.cas: CAS boot address unsupported
+Rejected bad-address-bf80.cas: CAS boot address unsupported
+Rejected bad-address-ff80.cas: CAS boot address unsupported
+PASS: real two-bank FatFs, CAS validation, bounds, 256-block header, read-only transport, recovery after every invalid file; zero storage writes.

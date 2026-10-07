@@ -1,0 +1,1077 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,9 +19,11 @@
+     PICO_FLASH_SIZE_BYTES=16777216
+ )
+ 
+-#pico_set_linker_script(a8_pico_cart ${CMAKE_CURRENT_SOURCE_DIR}/memmap_custom.ld)
++pico_set_linker_script(a8_pico_cart ${CMAKE_CURRENT_SOURCE_DIR}/memmap_preserved.ld)
+ 
+ target_sources(a8_pico_cart PUBLIC
++    ${CMAKE_CURRENT_LIST_DIR}/block_client.c
++    ${CMAKE_CURRENT_LIST_DIR}/dual_menu.c
+     ${CMAKE_CURRENT_LIST_DIR}/main.c
+     ${CMAKE_CURRENT_LIST_DIR}/atari_cart.c
+     ${CMAKE_CURRENT_LIST_DIR}/msc_disk.c
+@@ -36,11 +38,15 @@
+ target_include_directories(a8_pico_cart PUBLIC
+     ${CMAKE_CURRENT_LIST_DIR}
+     ${CMAKE_CURRENT_LIST_DIR}/fatfs
++    ${CMAKE_CURRENT_LIST_DIR}/../shared
+ )
+ 
+ # In addition to pico_stdlib required for common PicoSDK functionality, add dependency on tinyusb_device
+ # for TinyUSB device support
+-target_link_libraries(a8_pico_cart PUBLIC pico_stdlib hardware_flash tinyusb_device)
++target_link_libraries(a8_pico_cart PUBLIC pico_stdlib hardware_flash hardware_uart tinyusb_device)
+ 
+ # create map/bin/hex/uf2 file in addition to ELF.
+-pico_add_extra_outputs(a8_pico_cart)+pico_add_extra_outputs(a8_pico_cart)
++pico_enable_stdio_uart(a8_pico_cart 0)
++pico_enable_stdio_usb(a8_pico_cart 0)
++target_link_options(a8_pico_cart PRIVATE -Wl,--wrap=f_mount,--wrap=f_open,--wrap=f_opendir,--wrap=f_readdir,--wrap=f_closedir)
+--- a/block_client.c
++++ b/block_client.c
+@@ -0,0 +1,46 @@
++/* A8Next: synchronous block transport on the two unused GPIOs. */
++#include <string.h>
++#include "block_client.h"
++#include "block_transport.h"
++static uint32_t znext_sectors, znext_sequence;
++static bool znext_uart_ready;
++static uint8_t znext_tx[NX_HEADER+NX_MAX_PAYLOAD+4],znext_rx[NX_HEADER+NX_MAX_PAYLOAD+4];
++static void link_init(void) {
++ if(znext_uart_ready)return;
++ uart_init(uart0,NX_BAUD);uart_set_format(uart0,8,1,UART_PARITY_NONE);
++ uart_set_hw_flow(uart0,false,false);uart_set_fifo_enabled(uart0,true);uart_set_irq_enables(uart0,false,false);
++ gpio_set_function(28,GPIO_FUNC_UART);gpio_set_function(29,GPIO_FUNC_UART);
++ gpio_pull_up(29);znext_uart_ready=true;
++}
++static bool transact(uint8_t command,uint16_t length,uint16_t expected) {
++ link_init();uint32_t id=++znext_sequence;
++ nx_header(znext_tx,command,0,id,length);
++ /* No automatic retries of writes: a lost reply has an indeterminate commit
++    outcome. Report an I/O error rather than silently replaying filesystem I/O. */
++ while(uart_is_readable(uart0))(void)uart_getc(uart0);
++ uint64_t end=time_us_64()+NX_TIMEOUT_US;
++ if(!nx_send(uart0,znext_tx,end))return false;
++ while(time_us_64()<end){
++  if(!nx_receive(uart0,znext_rx,end))return false;
++  if(nx_get32(znext_rx+8)!=id)continue;
++  return znext_rx[5]==command&&nx_get16(znext_rx+6)==NX_OK&&nx_get16(znext_rx+12)==expected;
++ }return false;
++}
++bool nx_storage_open(void){
++ znext_sectors=0;
++ /* Remote flash-map initialization occurs on this explicit request, after boot ROM has
++    already begun servicing Atari. It does not delay initial cartridge boot. */
++ if(!transact(NX_INFO,0,4))return false;
++ znext_sectors=nx_get32(znext_rx+NX_HEADER);
++ return znext_sectors==30464u;
++}
++uint32_t nx_storage_sectors(void){return znext_sectors;}
++bool nx_storage_read(uint32_t lba,uint8_t *b){
++ if(lba>=znext_sectors)return false;nx_put32(znext_tx+NX_HEADER,lba);
++ if(!transact(NX_READ,4,512))return false;memcpy(b,znext_rx+NX_HEADER,512);return true;
++}
++bool nx_storage_write(uint32_t lba,const uint8_t *b){
++ if(lba>=znext_sectors)return false;nx_put32(znext_tx+NX_HEADER,lba);memcpy(znext_tx+NX_HEADER+4,b,512);
++ return transact(NX_WRITE,516,0);
++}
++bool nx_storage_sync(void){return transact(NX_SYNC,0,0);}
+--- a/block_client.h
++++ b/block_client.h
+@@ -0,0 +1,8 @@
++#pragma once
++#include <stdint.h>
++#include <stdbool.h>
++bool nx_storage_open(void);
++uint32_t nx_storage_sectors(void);
++bool nx_storage_read(uint32_t lba,uint8_t *buffer);
++bool nx_storage_write(uint32_t lba,const uint8_t *buffer);
++bool nx_storage_sync(void);
+--- a/dual_menu.c
++++ b/dual_menu.c
+@@ -0,0 +1,41 @@
++/* Virtual top directory without editing atari_cart.c or Atari boot ROM.
++   GNU ld --wrap adapts only FatFs calls. Real operations still use upstream FatFs. */
++#include "ff.h"
++#include "fatfs_disk.h"
++#include <string.h>
++#include "tusb.h"
++FRESULT __real_f_mount(FATFS *,const TCHAR *,BYTE);
++FRESULT __real_f_open(FIL *,const TCHAR *,BYTE);
++FRESULT __real_f_opendir(DIR *,const TCHAR *);
++FRESULT __real_f_readdir(DIR *,FILINFO *);
++FRESULT __real_f_closedir(DIR *);
++static FATFS volumes[2];static bool registered;
++/* A search may hold one virtual root plus real subdirectories recursively. */
++static DIR *virtual_root;static unsigned root_index;
++static bool ui(void){return !tud_mounted();}
++static void ensure(void){if(!registered){__real_f_mount(&volumes[0],"0:",0);__real_f_mount(&volumes[1],"1:",0);registered=true;}}
++static bool translate(const char *src,char dst[260]){
++ if(*src=='/')src++;
++ if(!strncmp(src,"LIBRARYA",8)&&(src[8]=='/'||!src[8])){dst[0]='0';src+=8;}
++ else if(!strncmp(src,"LIBRARYB",8)&&(src[8]=='/'||!src[8])){dst[0]='1';src+=8;}
++ else{dst[0]='0';} /* UNO_OS.ROM retains its original lookup in Library A. */
++ dst[1]=':';dst[2]='/';if(*src=='/')src++;size_t n=strlen(src);if(n>256)return false;memcpy(dst+3,src,n+1);return true;
++}
++FRESULT __wrap_f_mount(FATFS *fs,const TCHAR *path,BYTE opt){
++ if(!ui()||(*path && path[1]==':')){registered=false;return __real_f_mount(fs,path,opt);}
++ (void)fs;(void)opt;ensure();return FR_OK; /* Persistent owners avoid dangling stack FATFS objects. */
++}
++FRESULT __wrap_f_opendir(DIR *d,const TCHAR *path){
++ if(!ui())return __real_f_opendir(d,path);ensure();
++ if(!*path||!strcmp(path,"/")){if(virtual_root&&virtual_root!=d)return FR_TOO_MANY_OPEN_FILES;memset(d,0,sizeof(*d));virtual_root=d;root_index=0;return FR_OK;}
++ char translated[260];if(!translate(path,translated))return FR_INVALID_NAME;return __real_f_opendir(d,translated);
++}
++FRESULT __wrap_f_readdir(DIR *d,FILINFO *f){
++ if(d!=virtual_root)return __real_f_readdir(d,f);
++ if(!f){root_index=0;return FR_OK;}memset(f,0,sizeof(*f));
++ while(root_index<2){unsigned n=root_index++;if(n==0&&!fatfs_is_mounted())continue;if(n==1&&!duo_remote_ready())continue;
++  strcpy(f->fname,n?"Library B":"Library A");strcpy(f->altname,n?"LIBRARYB":"LIBRARYA");f->fattrib=AM_DIR;break;}
++ return FR_OK;
++}
++FRESULT __wrap_f_closedir(DIR *d){if(d==virtual_root){virtual_root=0;return FR_OK;}return __real_f_closedir(d);}
++FRESULT __wrap_f_open(FIL *f,const TCHAR *path,BYTE mode){if(!ui())return __real_f_open(f,path,mode);ensure();char translated[260];if(!translate(path,translated))return FR_INVALID_NAME;return __real_f_open(f,translated,mode);}
+--- a/fatfs/diskio.c
++++ b/fatfs/diskio.c
+@@ -1,149 +1,35 @@
+-/*-----------------------------------------------------------------------*/
+-/* Low level disk I/O module SKELETON for FatFs     (C)ChaN, 2019        */
+-/*-----------------------------------------------------------------------*/
+-/* If a working storage control module is available, it should be        */
+-/* attached to the FatFs via a glue function rather than modifying it.   */
+-/* This is an example of glue functions to attach various exsisting      */
+-/* storage control modules to the FatFs module with a defined API.       */
+-/*-----------------------------------------------------------------------*/
+-
+-#include "ff.h"			/* Obtains integer types */
+-#include "diskio.h"		/* Declarations of disk functions */
+-
+-/* Definitions of physical drive number for each drive */
+-#define DEV_RAM		0	/* Example: Map Ramdisk to physical drive 0 */
+-#define DEV_MMC		1	/* Example: Map MMC/SD card to physical drive 1 */
+-#define DEV_USB		2	/* Example: Map USB MSD to physical drive 2 */
+-
++/* Two independent FAT volumes: local boot flash and polled companion flash. */
++#include "ff.h"
++#include "diskio.h"
+ #include "fatfs_disk.h"
+-
+-/*-----------------------------------------------------------------------*/
+-/* Get Drive Status                                                      */
+-/*-----------------------------------------------------------------------*/
+-
+-DSTATUS disk_status (
+-	BYTE pdrv		/* Physical drive nmuber to identify the drive */
+-)
+-{
+-	DSTATUS stat;
+-	int result;
+-
+-	if (pdrv == 0)
+-		return 0;
+-
+-	return STA_NOINIT;
++#ifndef DUO_COMPANION
++#include "block_client.h"
++#endif
++DSTATUS disk_status(BYTE p){if(p==0)return fatfs_is_mounted()?0:STA_NOINIT;
++#ifndef DUO_COMPANION
++ if(p==1)return duo_remote_ready()?0:STA_NOINIT;
++#endif
++ return STA_NOINIT;}
++DSTATUS disk_initialize(BYTE p){return disk_status(p);}
++static bool valid(LBA_t s,UINT n){return n&&s<SECTOR_NUM&&n<=SECTOR_NUM-s;}
++DRESULT disk_read(BYTE p,BYTE *b,LBA_t s,UINT n){
++ if(!valid(s,n))return RES_PARERR;if(p==0)return fatfs_disk_read(b,s,n);
++#ifndef DUO_COMPANION
++ if(p==1){if(disk_status(p))return RES_NOTRDY;for(UINT i=0;i<n;i++)if(!nx_storage_read(s+i,b+512*i))return RES_ERROR;return RES_OK;}
++#endif
++ return RES_PARERR;}
++DRESULT disk_write(BYTE p,const BYTE *b,LBA_t s,UINT n){
++ if(!valid(s,n))return RES_PARERR;if(p==0)return fatfs_disk_write(b,s,n);
++#ifndef DUO_COMPANION
++ if(p==1){if(disk_status(p))return RES_NOTRDY;for(UINT i=0;i<n;i++)if(!nx_storage_write(s+i,b+512*i))return RES_ERROR;return RES_OK;}
++#endif
++ return RES_PARERR;}
++DRESULT disk_ioctl(BYTE p,BYTE cmd,void *b){
++ if(disk_status(p))return RES_NOTRDY;
++ if(cmd==CTRL_SYNC){
++#ifndef DUO_COMPANION
++  if(p==1)return nx_storage_sync()?RES_OK:RES_ERROR;
++#endif
++  return fatfs_disk_sync_ok()?RES_OK:RES_ERROR;}
++ switch(cmd){case GET_SECTOR_COUNT:*(LBA_t*)b=SECTOR_NUM;break;case GET_SECTOR_SIZE:*(WORD*)b=512;break;case GET_BLOCK_SIZE:*(DWORD*)b=8;break;default:return RES_PARERR;}return RES_OK;
+ }
+-
+-
+-
+-/*-----------------------------------------------------------------------*/
+-/* Inidialize a Drive                                                    */
+-/*-----------------------------------------------------------------------*/
+-
+-DSTATUS disk_initialize (
+-	BYTE pdrv				/* Physical drive nmuber to identify the drive */
+-)
+-{
+-	DSTATUS stat;
+-	int result;
+-
+-	if (pdrv == 0)
+-	{
+-		return 0;
+-	}
+-	return STA_NOINIT;
+-}
+-
+-
+-
+-/*-----------------------------------------------------------------------*/
+-/* Read Sector(s)                                                        */
+-/*-----------------------------------------------------------------------*/
+-
+-DRESULT disk_read (
+-	BYTE pdrv,		/* Physical drive nmuber to identify the drive */
+-	BYTE *buff,		/* Data buffer to store read data */
+-	LBA_t sector,	/* Start sector in LBA */
+-	UINT count		/* Number of sectors to read */
+-)
+-{
+-	DRESULT res;
+-	int result;
+-
+-	if (pdrv == 0)
+-	{
+-		res = fatfs_disk_read((uint8_t*)buff, sector, count);
+-		return res;
+-	}
+-
+-	return RES_PARERR;
+-}
+-
+-
+-
+-/*-----------------------------------------------------------------------*/
+-/* Write Sector(s)                                                       */
+-/*-----------------------------------------------------------------------*/
+-
+-#if FF_FS_READONLY == 0
+-
+-DRESULT disk_write (
+-	BYTE pdrv,			/* Physical drive nmuber to identify the drive */
+-	const BYTE *buff,	/* Data to be written */
+-	LBA_t sector,		/* Start sector in LBA */
+-	UINT count			/* Number of sectors to write */
+-)
+-{
+-	DRESULT res;
+-	int result;
+-
+-	if (pdrv == 0)
+-	{
+-		res = fatfs_disk_write((const uint8_t*)buff, sector, count);
+-		return res;
+-	}
+-
+-	return RES_PARERR;
+-}
+-
+-#endif
+-
+-
+-/*-----------------------------------------------------------------------*/
+-/* Miscellaneous Functions                                               */
+-/*-----------------------------------------------------------------------*/
+-
+-DRESULT disk_ioctl (
+-	BYTE pdrv,		/* Physical drive nmuber (0..) */
+-	BYTE cmd,		/* Control code */
+-	void *buff		/* Buffer to send/receive control data */
+-)
+-{
+-	DRESULT res;
+-	int result;
+-
+-	if (pdrv == 0)
+-	{
+-		switch(cmd) {
+-			case CTRL_SYNC:
+-				fatfs_disk_sync();
+-				return RES_OK;
+-			case GET_SECTOR_COUNT:
+-				*(LBA_t*) buff = SECTOR_NUM;
+-				return RES_OK;
+-			case GET_SECTOR_SIZE:
+-				*(WORD*) buff = SECTOR_SIZE;
+-				return RES_OK;
+-			case GET_BLOCK_SIZE:
+-				*(DWORD*) buff = 1;
+-				return RES_OK;
+-			case CTRL_TRIM:
+-				return RES_OK;
+-			default:
+-				return RES_PARERR;
+-		}
+-	}
+-
+-	return RES_PARERR;
+-}
+-
+--- a/fatfs/ffconf.h
++++ b/fatfs/ffconf.h
+@@ -166,7 +166,7 @@
+ / Drive/Volume Configurations
+ /---------------------------------------------------------------------------*/
+ 
+-#define FF_VOLUMES		1
++#define FF_VOLUMES		2
+ /* Number of volumes (logical drives) to be used. (1-10) */
+ 
+ 
+--- a/fatfs_disk.c
++++ b/fatfs_disk.c
+@@ -1,95 +1,39 @@
+-/**
+- *    _   ___ ___ _       ___          _   
+- *   /_\ ( _ ) _ (_)__ _ / __|__ _ _ _| |_ 
+- *  / _ \/ _ \  _/ / _/_\ (__/ _` | '_|  _|
+- * /_/ \_\___/_| |_\__\_/\___\__,_|_|  \__|
+- *                                         
+- * 
+- * Atari 8-bit cartridge for Raspberry Pi Pico
+- *
+- * Robin Edwards 2023
+- *
+- * Needs to be a release NOT debug build for the cartridge emulation to work
+- */
+-
++/* A8Duo storage glue. Atari engine and its SRAM buffers are unchanged. */
++#include "fatfs_disk.h"
+ #include "ff.h"
+ #include "diskio.h"
+-#include "fatfs_disk.h"
+-
+-#include <stdio.h>
+-#include "pico/stdlib.h"
+-#include "hardware/flash.h"
+-
+-bool flashfs_is_mounted = false;
+-
+-bool mount_fatfs_disk()
+-{
+-    int err = flash_fs_mount();
+-    if (err)
+-        return false;
+-        
+-    flashfs_is_mounted = true;
+-    return true;
++#include "tusb.h"
++#include <string.h>
++#ifndef DUO_COMPANION
++#include "block_client.h"
++#endif
++static bool mounted,remote;
++bool mount_fatfs_disk(void){
++ if(!mounted)mounted=flash_fs_mount()==0;
++#ifndef DUO_COMPANION
++ if(!tud_mounted()&&!remote)remote=nx_storage_open();
++#endif
++ return mounted;
+ }
+-
+-bool fatfs_is_mounted() { return flashfs_is_mounted; }
+-
+-void create_fatfs_disk()
+-{
+-    flash_fs_create();
+-    flashfs_is_mounted = true;
+-
+-    // now create a fatfs on the flash_fs filesystem :-)
+-
+-    FATFS fs;           /* Filesystem object */
+-    FIL fil;            /* File object */
+-    FRESULT res;        /* API result code */
+-    BYTE work[FF_MAX_SS]; /* Work area (larger is better for processing time) */
+-
+-    /* Format the default drive with default parameters */
+-    printf("making fatfs\n");
+-    res = f_mkfs("", 0, work, sizeof work);
+-    f_mount(&fs, "", 0);
+-    f_setlabel("A8-PICOCART");
+-    res = f_open(&fil, "WELCOME.TXT", FA_CREATE_NEW | FA_WRITE);
+-    f_puts("Atari 8-bit PicoCart\r\n(c)2023 Electrotrains\r\nDrag ROM,CAR & XEX files in here!\r\n", &fil);
+-    f_close(&fil);
+-    f_mount(0, "", 0);
++bool fatfs_is_mounted(void){return mounted;}
++bool duo_remote_ready(void){return remote;}
++void create_fatfs_disk(void){
++ /* Upstream invokes this after mount failure, including at USB attach. Only a
++    completely blank data area may be automatically formatted. */
++ if(mounted||!flash_fs_blank())return;
++ flash_fs_create();mounted=true;FATFS fs;BYTE work[512];
++ if(f_mkfs("0:",0,work,sizeof work)!=FR_OK){mounted=false;return;}
++ if(f_mount(&fs,"0:",1)!=FR_OK){mounted=false;return;}
++ f_setlabel("0:A8DUO");f_mount(0,"0:",0);flash_fs_sync();
+ }
+-
+-uint32_t fatfs_disk_read(uint8_t* buff, uint32_t sector, uint32_t count)
+-{	
+-//	printf("fatfs_disk_read sector=%d, count=%d\n", sector, count);
+-    if (!flashfs_is_mounted) return RES_ERROR;
+-    if (sector < 0 || sector >= SECTOR_NUM)
+-			return RES_PARERR;
+-
+-    /* copy data to buffer */
+-    for (int i=0; i<count; i++)
+-        flash_fs_read_FAT_sector(sector + i, buff + (i*SECTOR_SIZE));
+-    return RES_OK;
++static bool valid(uint32_t sector,uint32_t count){return count&&sector<SECTOR_NUM&&count<=SECTOR_NUM-sector;}
++uint32_t fatfs_disk_read(uint8_t *b,uint32_t sector,uint32_t count){
++ if(!mounted)return RES_NOTRDY;if(!valid(sector,count))return RES_PARERR;
++ for(uint32_t i=0;i<count;i++)flash_fs_read_FAT_sector(sector+i,b+512*i);return RES_OK;
+ }
+-
+-uint32_t fatfs_disk_write(const uint8_t* buff, uint32_t sector, uint32_t count)
+-{
+-// 	printf("fatfs_disk_write sector=%d, count=%d\n", sector, count);
+-    if (!flashfs_is_mounted) return RES_ERROR;
+-    if (sector < 0 || sector >= SECTOR_NUM)
+-        return RES_PARERR;
+-
+-    /* copy data to buffer */
+-    for (int i=0; i<count; i++) {
+-        flash_fs_write_FAT_sector(sector + i, buff + (i*SECTOR_SIZE));
+-        // verify
+-        if (!flash_fs_verify_FAT_sector(sector + i, buff + (i*SECTOR_SIZE))) {
+-            printf("VERIFY ERROR!");
+-            return RES_ERROR;
+-        }
+-    }
+-    return RES_OK;
++uint32_t fatfs_disk_write(const uint8_t *b,uint32_t sector,uint32_t count){
++ if(!mounted)return RES_NOTRDY;if(!valid(sector,count))return RES_PARERR;
++ for(uint32_t i=0;i<count;i++){flash_fs_write_FAT_sector(sector+i,b+512*i);if(!flash_fs_verify_FAT_sector(sector+i,b+512*i))return RES_ERROR;}return RES_OK;
+ }
+-
+-void fatfs_disk_sync()
+-{
+-    flash_fs_sync();
+-}+void fatfs_disk_sync(void){if(mounted)flash_fs_sync();}
++bool fatfs_disk_sync_ok(void){if(!mounted)return false;flash_fs_sync();return true;}
+--- a/fatfs_disk.h
++++ b/fatfs_disk.h
+@@ -1,30 +1,15 @@
+-/**
+- *    _   ___ ___ _       ___          _   
+- *   /_\ ( _ ) _ (_)__ _ / __|__ _ _ _| |_ 
+- *  / _ \/ _ \  _/ / _/_\ (__/ _` | '_|  _|
+- * /_/ \_\___/_| |_\__\_/\___\__,_|_|  \__|
+- *                                         
+- * 
+- * Atari 8-bit cartridge for Raspberry Pi Pico
+- *
+- * Robin Edwards 2023
+- *
+- * Needs to be a release NOT debug build for the cartridge emulation to work
+- */
+-
+-#ifndef __FATFS_DISK_H__
+-#define __FATFS_DISK_H__
+-
++#pragma once
++#include <stdint.h>
++#include <stdbool.h>
+ #include "flash_fs.h"
+-
+-#define SECTOR_NUM 30716 //2044 //1800
+-#define SECTOR_SIZE 512
+-
+-void create_fatfs_disk();
+-bool mount_fatfs_disk();
+-bool fatfs_is_mounted();
+-uint32_t fatfs_disk_read(uint8_t* buff, uint32_t sector, uint32_t count);
+-uint32_t fatfs_disk_write(const uint8_t* buff, uint32_t sector, uint32_t count);
+-void fatfs_disk_sync();
+-
+-#endif+#define SECTOR_NUM 30464u
++#define SECTOR_SIZE 512u
++/* 15 MiB storage minus 60 KiB map and 68 KiB spare = 14.875 MiB per module. */
++bool mount_fatfs_disk(void);
++void create_fatfs_disk(void);
++bool fatfs_is_mounted(void);
++uint32_t fatfs_disk_read(uint8_t *,uint32_t,uint32_t);
++uint32_t fatfs_disk_write(const uint8_t *,uint32_t,uint32_t);
++void fatfs_disk_sync(void);
++bool fatfs_disk_sync_ok(void);
++bool duo_remote_ready(void);
+--- a/flash_fs.c
++++ b/flash_fs.c
+@@ -26,7 +26,7 @@
+ // fine for the intended use case.
+ 
+ #define HW_FLASH_STORAGE_BASE  (1024 * 1024)
+-#define MAGIC_8_BYTES "RHE!FS30"
++#define MAGIC_8_BYTES "DUOFS001"
+ 
+ #define NUM_FAT_SECTORS 30716   // 15megs / 512bytes = 30720, but we used 4 records for the header (8 bytes)
+ #define NUM_FLASH_SECTORS 3840  // 15megs / 4096bytes = 3840
+@@ -149,6 +149,14 @@
+     for (int i=1; i<15; i++)
+         flash_read_sector(i, 0, (uint8_t*)&fs_map+(4096*i), 4096);
+ 
++    /* A corrupt on-flash map must never index outside the 16 MiB chip. */
++    memset(used_bitmap,0,sizeof used_bitmap);
++    for (int i=0; i<NUM_FAT_SECTORS; i++) {
++        uint16_t e=fs_map.sectors[i], sector=getMapSector(e); uint8_t bit=1u<<getMapOffset(e);
++        if (e && (sector<15 || sector>=NUM_FLASH_SECTORS || (used_bitmap[sector]&bit))) return 2;
++        if (e) used_bitmap[sector]|=bit;
++    }
++    write_sector_bitmap=0;
+     init_used_bitmap();
+     debug_print_in_use();
+     return 0;
+@@ -158,7 +166,7 @@
+ {
+     printf("flash_fs_create()\n");
+     memset(&fs_map, 0, sizeof(fs_map));
+-    strcpy(fs_map.header, MAGIC_8_BYTES);
++    memcpy(fs_map.header, MAGIC_8_BYTES, 8);
+     for (int i=0; i<15; i++)
+         fs_map_needs_written[i] = true;
+     write_fs_map();
+@@ -172,6 +180,7 @@
+ 
+ void flash_fs_read_FAT_sector(uint16_t fat_sector, void *buffer)
+ {
++    if (fat_sector>=30464) { memset(buffer,0,512); return; }
+     int mapEntry = fs_map.sectors[fat_sector];
+     if (mapEntry)
+         flash_read_sector(getMapSector(mapEntry), getMapOffset(mapEntry), buffer, 512);
+@@ -182,6 +191,7 @@
+ 
+ void flash_fs_write_FAT_sector(uint16_t fat_sector, const void *buffer)
+ {
++    if (fat_sector>=30464) return;
+     uint16_t mapEntry = fs_map.sectors[fat_sector];
+     if (mapEntry)
+     {   // mark any previous flash allocated as unused
+@@ -247,4 +257,10 @@
+         if (preserve_bitmap & (1 << i))
+            flash_write_sector(sector, i, buf + (i * 512), 512);
+     }
+-}+}
++/* No automatic destruction of old or damaged user storage. */
++bool flash_fs_blank(void) {
++    const uint32_t *p=(const uint32_t *)(XIP_BASE+HW_FLASH_STORAGE_BASE);
++    for (uint32_t i=0;i<(15u*1024u*1024u)/4;i++) if(p[i]!=0xffffffffu)return false;
++    return true;
++}
+--- a/flash_fs.h
++++ b/flash_fs.h
+@@ -16,6 +16,8 @@
+ #define __FLASH_FS_H__
+ 
+ #include <stdbool.h>
++#include <stdint.h>
++bool flash_fs_blank(void);
+ 
+ int flash_fs_mount();
+ void flash_fs_create();
+--- a/memmap_preserved.ld
++++ b/memmap_preserved.ld
+@@ -0,0 +1,262 @@
++/* A8Next: SDK 1.5.1 default map, with rebuilt-upstream SRAM locations pinned.
++   Toolchain GCC 13.2.Rel1. No instruction or Atari source changes. */
++/* Based on GCC ARM embedded samples.
++   Defines the following symbols for use by code:
++    __exidx_start
++    __exidx_end
++    __etext
++    __data_start__
++    __preinit_array_start
++    __preinit_array_end
++    __init_array_start
++    __init_array_end
++    __fini_array_start
++    __fini_array_end
++    __data_end__
++    __bss_start__
++    __bss_end__
++    __end__
++    end
++    __HeapLimit
++    __StackLimit
++    __StackTop
++    __stack (== StackTop)
++*/
++
++MEMORY
++{
++    FLASH(rx) : ORIGIN = 0x10000000, LENGTH = 1024k
++    RAM(rwx) : ORIGIN =  0x20000000, LENGTH = 256k
++    SCRATCH_X(rwx) : ORIGIN = 0x20040000, LENGTH = 4k
++    SCRATCH_Y(rwx) : ORIGIN = 0x20041000, LENGTH = 4k
++}
++
++ENTRY(_entry_point)
++
++SECTIONS
++{
++    /* Second stage bootloader is prepended to the image. It must be 256 bytes big
++       and checksummed. It is usually built by the boot_stage2 target
++       in the Raspberry Pi Pico SDK
++    */
++
++    .flash_begin : {
++        __flash_binary_start = .;
++    } > FLASH
++
++    .boot2 : {
++        __boot2_start__ = .;
++        KEEP (*(.boot2))
++        __boot2_end__ = .;
++    } > FLASH
++
++    ASSERT(__boot2_end__ - __boot2_start__ == 256,
++        "ERROR: Pico second stage bootloader must be 256 bytes in size")
++
++    /* The second stage will always enter the image at the start of .text.
++       The debugger will use the ELF entry point, which is the _entry_point
++       symbol if present, otherwise defaults to start of .text.
++       This can be used to transfer control back to the bootrom on debugger
++       launches only, to perform proper flash setup.
++    */
++
++    .text : {
++        __logical_binary_start = .;
++        KEEP (*(.vectors))
++        KEEP (*(.binary_info_header))
++        __binary_info_header_end = .;
++        KEEP (*(.reset))
++        /* TODO revisit this now memset/memcpy/float in ROM */
++        /* bit of a hack right now to exclude all floating point and time critical (e.g. memset, memcpy) code from
++         * FLASH ... we will include any thing excluded here in .data below by default */
++        *(.init)
++        *(EXCLUDE_FILE(*libgcc.a: *libc.a:*lib_a-mem*.o *libm.a:) .text*)
++        *(.fini)
++        /* Pull all c'tors into .text */
++        *crtbegin.o(.ctors)
++        *crtbegin?.o(.ctors)
++        *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
++        *(SORT(.ctors.*))
++        *(.ctors)
++        /* Followed by destructors */
++        *crtbegin.o(.dtors)
++        *crtbegin?.o(.dtors)
++        *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
++        *(SORT(.dtors.*))
++        *(.dtors)
++
++        *(.eh_frame*)
++        . = ALIGN(4);
++    } > FLASH
++
++    .rodata : {
++        *(EXCLUDE_FILE(*libgcc.a: *libc.a:*lib_a-mem*.o *libm.a:) .rodata*)
++        . = ALIGN(4);
++        *(SORT_BY_ALIGNMENT(SORT_BY_NAME(.flashdata*)))
++        . = ALIGN(4);
++    } > FLASH
++
++    .ARM.extab :
++    {
++        *(.ARM.extab* .gnu.linkonce.armextab.*)
++    } > FLASH
++
++    __exidx_start = .;
++    .ARM.exidx :
++    {
++        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
++    } > FLASH
++    __exidx_end = .;
++
++    /* Machine inspectable binary information */
++    . = ALIGN(4);
++    __binary_info_start = .;
++    .binary_info :
++    {
++        KEEP(*(.binary_info.keep.*))
++        *(.binary_info.*)
++    } > FLASH
++    __binary_info_end = .;
++    . = ALIGN(4);
++
++   .ram_vector_table (NOLOAD): {
++        *(.ram_vector_table)
++    } > RAM
++
++    .data : {
++        __data_start__ = .;
++        *(vtable)
++
++        *(.time_critical*)
++
++        /* remaining .text and .rodata; i.e. stuff we exclude above because we want it in RAM */
++        *(.text*)
++        . = ALIGN(4);
++        *(.rodata*)
++        . = ALIGN(4);
++
++        . = ORIGIN(RAM) + 0x2340;
++        KEEP(*(.data.A8PicoCart_rom))
++        *(.data*)
++
++        . = ALIGN(4);
++        *(.after_data.*)
++        . = ALIGN(4);
++        /* preinit data */
++        PROVIDE_HIDDEN (__mutex_array_start = .);
++        KEEP(*(SORT(.mutex_array.*)))
++        KEEP(*(.mutex_array))
++        PROVIDE_HIDDEN (__mutex_array_end = .);
++
++        . = ALIGN(4);
++        /* preinit data */
++        PROVIDE_HIDDEN (__preinit_array_start = .);
++        KEEP(*(SORT(.preinit_array.*)))
++        KEEP(*(.preinit_array))
++        PROVIDE_HIDDEN (__preinit_array_end = .);
++
++        . = ALIGN(4);
++        /* init data */
++        PROVIDE_HIDDEN (__init_array_start = .);
++        KEEP(*(SORT(.init_array.*)))
++        KEEP(*(.init_array))
++        PROVIDE_HIDDEN (__init_array_end = .);
++
++        . = ALIGN(4);
++        /* finit data */
++        PROVIDE_HIDDEN (__fini_array_start = .);
++        *(SORT(.fini_array.*))
++        *(.fini_array)
++        PROVIDE_HIDDEN (__fini_array_end = .);
++
++        *(.jcr)
++        . = ALIGN(4);
++        /* All data end */
++        __data_end__ = .;
++    } > RAM AT> FLASH
++    /* __etext is (for backwards compatibility) the name of the .data init source pointer (...) */
++    __etext = LOADADDR(.data);
++
++    .uninitialized_data (NOLOAD): {
++        . = ALIGN(4);
++        *(.uninitialized_data*)
++    } > RAM
++
++    /* Start and end symbols must be word-aligned */
++    .scratch_x : {
++        __scratch_x_start__ = .;
++        *(.scratch_x.*)
++        . = ALIGN(4);
++        __scratch_x_end__ = .;
++    } > SCRATCH_X AT > FLASH
++    __scratch_x_source__ = LOADADDR(.scratch_x);
++
++    .scratch_y : {
++        __scratch_y_start__ = .;
++        *(.scratch_y.*)
++        . = ALIGN(4);
++        __scratch_y_end__ = .;
++    } > SCRATCH_Y AT > FLASH
++    __scratch_y_source__ = LOADADDR(.scratch_y);
++
++    .bss  : {
++        . = ALIGN(4);
++        __bss_start__ = .;
++        . = ORIGIN(RAM) + 0x5a60;
++        KEEP(*(.bss.cart_d5xx))
++        KEEP(*(.bss.cart_ram))
++        *(SORT_BY_ALIGNMENT(SORT_BY_NAME(.bss*)))
++        *(COMMON)
++        . = ALIGN(4);
++        __bss_end__ = .;
++    } > RAM
++
++    .heap (NOLOAD):
++    {
++        __end__ = .;
++        end = __end__;
++        KEEP(*(.heap*))
++        __HeapLimit = .;
++    } > RAM
++
++    /* .stack*_dummy section doesn't contains any symbols. It is only
++     * used for linker to calculate size of stack sections, and assign
++     * values to stack symbols later
++     *
++     * stack1 section may be empty/missing if platform_launch_core1 is not used */
++
++    /* by default we put core 0 stack at the end of scratch Y, so that if core 1
++     * stack is not used then all of SCRATCH_X is free.
++     */
++    .stack1_dummy (NOLOAD):
++    {
++        *(.stack1*)
++    } > SCRATCH_X
++    .stack_dummy (NOLOAD):
++    {
++        KEEP(*(.stack*))
++    } > SCRATCH_Y
++
++    .flash_end : {
++        PROVIDE(__flash_binary_end = .);
++    } > FLASH
++
++    /* stack limit is poorly named, but historically is maximum heap ptr */
++    __StackLimit = ORIGIN(RAM) + LENGTH(RAM);
++    __StackOneTop = ORIGIN(SCRATCH_X) + LENGTH(SCRATCH_X);
++    __StackTop = ORIGIN(SCRATCH_Y) + LENGTH(SCRATCH_Y);
++    __StackOneBottom = __StackOneTop - SIZEOF(.stack1_dummy);
++    __StackBottom = __StackTop - SIZEOF(.stack_dummy);
++    PROVIDE(__stack = __StackTop);
++
++    /* Check if data + heap + stack exceeds RAM limit */
++    ASSERT(__StackLimit >= __HeapLimit, "region RAM overflowed")
++
++    ASSERT( __binary_info_header_end - __logical_binary_start <= 256, "Binary info must be in first 256 bytes of the binary")
++    /* todo assert on extra code */
++}
++
++
++ASSERT(A8PicoCart_rom == 0x20002340, "Atari menu ROM moved")
++ASSERT(cart_d5xx == 0x20005a60, "Atari command window moved")
++ASSERT(cart_ram == 0x20005b60, "Atari cartridge RAM moved")
+--- a/msc_disk.c
++++ b/msc_disk.c
+@@ -1,171 +1,28 @@
+-/**
+- *    _   ___ ___ _       ___          _   
+- *   /_\ ( _ ) _ (_)__ _ / __|__ _ _ _| |_ 
+- *  / _ \/ _ \  _/ / _/_\ (__/ _` | '_|  _|
+- * /_/ \_\___/_| |_\__\_/\___\__,_|_|  \__|
+- *                                         
+- * 
+- * Atari 8-bit cartridge for Raspberry Pi Pico
+- *
+- * Robin Edwards 2023
+- *
+- * Needs to be a release NOT debug build for the cartridge emulation to work
+- */
+-
++/* A8Next USB block callbacks. Synchronous writes, explicit errors and safe eject. */
+ #include "tusb.h"
+ #include "fatfs_disk.h"
+-
+-// whether host does safe-eject
+-static bool ejected = false;
+-
+-
+-// Invoked when received SCSI_CMD_INQUIRY
+-// Application fill vendor id, product id and revision with string up to 8, 16, 4 characters respectively
+-void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16], uint8_t product_rev[4])
+-{
+-  (void) lun;
+-
+-  const char vid[] = "PicoCart";
+-  const char pid[] = "Mass Storage";
+-  const char rev[] = "1.0";
+-
+-  memcpy(vendor_id  , vid, strlen(vid));
+-  memcpy(product_id , pid, strlen(pid));
+-  memcpy(product_rev, rev, strlen(rev));
++#include <string.h>
++static bool ejected;
++void tud_msc_inquiry_cb(uint8_t lun,uint8_t v[8],uint8_t p[16],uint8_t r[4]){
++ (void)lun;memcpy(v,"A8Duo  ",8);memcpy(p,"Library A       ",16);memcpy(r,"0002",4);
++}
++bool tud_msc_test_unit_ready_cb(uint8_t lun){
++ if(ejected||!fatfs_is_mounted()){tud_msc_set_sense(lun,SCSI_SENSE_NOT_READY,0x3a,0);return false;}return true;
++}
++void tud_msc_capacity_cb(uint8_t lun,uint32_t *count,uint16_t *size){(void)lun;*count=SECTOR_NUM;*size=512;}
++bool tud_msc_start_stop_cb(uint8_t lun,uint8_t condition,bool start,bool eject){
++ (void)lun;(void)condition;if(eject){if(start){ejected=false;return mount_fatfs_disk();}if(!fatfs_disk_sync_ok())return false;ejected=true;}return true;
++}
++bool tud_msc_is_writable_cb(uint8_t lun){return tud_msc_test_unit_ready_cb(lun);}
++int32_t tud_msc_read10_cb(uint8_t lun,uint32_t lba,uint32_t offset,void *b,uint32_t n){
++ if(!tud_msc_test_unit_ready_cb(lun)||offset||n!=512||fatfs_disk_read(b,lba,1))return -1;return 512;
++}
++int32_t tud_msc_write10_cb(uint8_t lun,uint32_t lba,uint32_t offset,uint8_t *b,uint32_t n){
++ if(!tud_msc_test_unit_ready_cb(lun)||offset||n!=512||fatfs_disk_write(b,lba,1))return -1;return 512;
++}
++int32_t tud_msc_scsi_cb(uint8_t lun,const uint8_t cmd[16],void *b,uint16_t n){
++ (void)b;(void)n;if(cmd[0]==0x35)return fatfs_disk_sync_ok()?0:-1;
++ tud_msc_set_sense(lun,SCSI_SENSE_ILLEGAL_REQUEST,0x20,0);return -1;
+ }
+ 
+-// Invoked when received Test Unit Ready command.
+-// return true allowing host to read/write this LUN e.g SD card inserted
+-bool tud_msc_test_unit_ready_cb(uint8_t lun)
+-{
+-  (void) lun;
+-
+-  // RAM disk is ready until ejected
+-  if (ejected) {
+-    // Additional Sense 3A-00 is NOT_FOUND
+-    tud_msc_set_sense(lun, SCSI_SENSE_NOT_READY, 0x3a, 0x00);
+-    return false;
+-  }
+-
+-  return true;
+-}
+-
+-// Invoked when received SCSI_CMD_READ_CAPACITY_10 and SCSI_CMD_READ_FORMAT_CAPACITY to determine the disk size
+-// Application update block count and block size
+-void tud_msc_capacity_cb(uint8_t lun, uint32_t* block_count, uint16_t* block_size)
+-{
+-  (void) lun;
+-
+-  *block_count = SECTOR_NUM;
+-  *block_size  = SECTOR_SIZE;
+-}
+-
+-// Invoked when received Start Stop Unit command
+-// - Start = 0 : stopped power mode, if load_eject = 1 : unload disk storage
+-// - Start = 1 : active mode, if load_eject = 1 : load disk storage
+-bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, bool load_eject)
+-{
+-  (void) lun;
+-  (void) power_condition;
+-
+-  if ( load_eject )
+-  {
+-    if (start)
+-    {
+-      // load disk storage
+-    }else
+-    {
+-      // unload disk storage
+-      ejected = true;
+-    }
+-  }
+-
+-  return true;
+-}
+-
+-// Callback invoked when received READ10 command.
+-// Copy disk's data to buffer (up to bufsize) and return number of copied bytes.
+-int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void* buffer, uint32_t bufsize)
+-{
+-  (void) lun;
+-
+-  if(offset != 0) return -1;	
+-  if(bufsize != SECTOR_SIZE) return -1;	
+-
+-  uint32_t status = fatfs_disk_read(buffer, lba, 1);
+-  if(status != 0) return -1;
+-  return (int32_t) bufsize;
+-}
+-
+-bool tud_msc_is_writable_cb (uint8_t lun)
+-{
+-  (void) lun;
+-  return true;
+-}
+-
+-// Callback invoked when received WRITE10 command.
+-// Process data in buffer to disk's storage and return number of written bytes
+-alarm_id_t alarm_id = -1;
+-int64_t sync_callback(alarm_id_t id, void *user_data)
+-{
+-   	fatfs_disk_sync();
+-}
+-
+-int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t* buffer, uint32_t bufsize)
+-{
+-  (void) lun;
+-
+-  if(offset != 0) return -1;	
+-  if(bufsize != SECTOR_SIZE) return -1;	
+-
+-  uint32_t status = fatfs_disk_write(buffer, lba, 1);
+-
+-  // we need to sync the flash but only do it when activity dies down :-)
+-  if(alarm_id >= 0)
+-      cancel_alarm(alarm_id);
+-  alarm_id = add_alarm_in_ms(250, sync_callback, NULL, false);
+-
+-  if(status != 0) return -1;
+-  return (int32_t) bufsize;
+-}
+-
+-// Callback invoked when received an SCSI command not in built-in list below
+-// - READ_CAPACITY10, READ_FORMAT_CAPACITY, INQUIRY, MODE_SENSE6, REQUEST_SENSE
+-// - READ10 and WRITE10 has their own callbacks
+-int32_t tud_msc_scsi_cb (uint8_t lun, uint8_t const scsi_cmd[16], void* buffer, uint16_t bufsize)
+-{
+-  // read10 & write10 has their own callback and MUST not be handled here
+-
+-  void const* response = NULL;
+-  int32_t resplen = 0;
+-
+-  // most scsi handled is input
+-  bool in_xfer = true;
+-
+-  switch (scsi_cmd[0])
+-  {
+-    default:
+-      // Set Sense = Invalid Command Operation
+-      tud_msc_set_sense(lun, SCSI_SENSE_ILLEGAL_REQUEST, 0x20, 0x00);
+-
+-      // negative means error -> tinyusb could stall and/or response with failed status
+-      resplen = -1;
+-    break;
+-  }
+-
+-  // return resplen must not larger than bufsize
+-  if ( resplen > bufsize ) resplen = bufsize;
+-
+-  if ( response && (resplen > 0) )
+-  {
+-    if(in_xfer)
+-    {
+-      memcpy(buffer, response, (size_t) resplen);
+-    }else
+-    {
+-      // SCSI output
+-    }
+-  }
+-
+-  return (int32_t) resplen;
+-}
++void tud_msc_write10_complete_cb(uint8_t lun){(void)lun;fatfs_disk_sync();}
+--- a/usb_descriptors.c
++++ b/usb_descriptors.c
+@@ -143,7 +143,7 @@
+ uint8_t const desc_fs_configuration[] =
+ {
+   // Config number, interface count, string index, total length, attribute, power in mA
+-  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 100),
++  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 500),
+ 
+   // Interface number, string index, EP notification address and size, EP data address (out, in) and size.
+   TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 64),
+@@ -159,7 +159,7 @@
+ uint8_t const desc_hs_configuration[] =
+ {
+   // Config number, interface count, string index, total length, attribute, power in mA
+-  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 100),
++  TUD_CONFIG_DESCRIPTOR(1, ITF_NUM_TOTAL, 0, CONFIG_TOTAL_LEN, 0x00, 500),
+ 
+   // Interface number, string index, EP notification address and size, EP data address (out, in) and size.
+   TUD_CDC_DESCRIPTOR(ITF_NUM_CDC, 4, EPNUM_CDC_NOTIF, 8, EPNUM_CDC_OUT, EPNUM_CDC_IN, 512),
+@@ -240,9 +240,9 @@
+ char const* string_desc_arr [] =
+ {
+   (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
+-  "Electrotrains",                 // 1: Manufacturer
+-  "A8PicoCart",                    // 2: Product
+-  "123456789012",                  // 3: Serials, should use chip ID
++  "A8Duo prototype",                 // 1: Manufacturer
++  "A8Duo Library A",                    // 2: Product
++  "A8DUO-LIB-A",                  // 3: Serials, should use chip ID
+   "A8PicoCart CDC",                // 4: CDC Interface
+   "A8PicoCart MSC",                // 5: MSC Interface
+ };

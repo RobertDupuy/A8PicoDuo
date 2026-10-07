@@ -1,0 +1,86 @@
+{
+  "changes": [
+    {
+      "path": "firmware/engine/CMakeLists.txt",
+      "status": "modified",
+      "sha256": "4a2605e3adcb7919d8e4a4e528698b4c5013546e6fe5a3300ca6a96cc0325a3a"
+    },
+    {
+      "path": "firmware/engine/atari_cart.c",
+      "status": "modified",
+      "sha256": "b934f9f09eafbe886c2a1682e7b449826c63e92778ad6222f79cb0b48e5ec4ac"
+    },
+    {
+      "path": "firmware/engine/cas_file.c",
+      "status": "new",
+      "sha256": "669a7c29f42206e0b5ddb6e5c3b702b854ce9c312b85bdef72ab03d95674c9de"
+    },
+    {
+      "path": "firmware/engine/cas_file.h",
+      "status": "new",
+      "sha256": "7e5c7fbb738365a0693d7299e0ffc4dcf19fdf65ff4e5e50294d2bd1d2176117"
+    },
+    {
+      "path": "firmware/engine/cas_menu.c",
+      "status": "new",
+      "sha256": "cac7d1aa4fc641c3c39e05a233c8a81fa82fde09403cc9b909e93d49ba1ed6b7"
+    },
+    {
+      "path": "firmware/engine/dual_menu.c",
+      "status": "modified",
+      "sha256": "55d88daabb3dd8f392d54f9b79ef5d51b4a6665dd747062a4bb16a09cfd54b21"
+    },
+    {
+      "path": "firmware/engine/game_virtual.c",
+      "status": "modified",
+      "sha256": "c47c165d81e444503c9ea7ce724b41ce84bdbaa6afd275c83461cd884ba35d19"
+    }
+  ],
+  "unchanged": [
+    "firmware/A8PicoCart-upstream.asm",
+    "firmware/companion/CMakeLists.txt",
+    "firmware/companion/erase_data.c",
+    "firmware/companion/main.c",
+    "firmware/companion/msc_disk.c",
+    "firmware/companion/myboard.h",
+    "firmware/companion/pico_sdk_import.cmake",
+    "firmware/companion/tusb_config.h",
+    "firmware/companion/usb_descriptors.c",
+    "firmware/engine/.vscode/c_cpp_properties.json",
+    "firmware/engine/.vscode/cmake-kits.json",
+    "firmware/engine/.vscode/extensions.json",
+    "firmware/engine/.vscode/launch.json",
+    "firmware/engine/.vscode/settings.json",
+    "firmware/engine/.vscode/tasks.json",
+    "firmware/engine/atari_cart.h",
+    "firmware/engine/block_client.c",
+    "firmware/engine/block_client.h",
+    "firmware/engine/fatfs/00history.txt",
+    "firmware/engine/fatfs/00readme.txt",
+    "firmware/engine/fatfs/diskio.c",
+    "firmware/engine/fatfs/diskio.h",
+    "firmware/engine/fatfs/ff.c",
+    "firmware/engine/fatfs/ff.h",
+    "firmware/engine/fatfs/ffconf.h",
+    "firmware/engine/fatfs/ffsystem.c",
+    "firmware/engine/fatfs/ffunicode.c",
+    "firmware/engine/fatfs_disk.c",
+    "firmware/engine/fatfs_disk.h",
+    "firmware/engine/flash_fs.c",
+    "firmware/engine/flash_fs.h",
+    "firmware/engine/game_virtual.h",
+    "firmware/engine/main.c",
+    "firmware/engine/memmap_custom.ld",
+    "firmware/engine/memmap_preserved.ld",
+    "firmware/engine/msc_disk.c",
+    "firmware/engine/myboard.h",
+    "firmware/engine/osrom.h",
+    "firmware/engine/pico_sdk_import.cmake",
+    "firmware/engine/rom.h",
+    "firmware/engine/tusb_config.h",
+    "firmware/engine/usb_descriptors.c",
+    "firmware/engine.patch",
+    "firmware/shared/block_protocol.h",
+    "firmware/shared/block_transport.h"
+  ]
+}

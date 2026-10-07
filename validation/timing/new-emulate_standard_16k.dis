@@ -1,0 +1,76 @@
+
+a8duo-cas/build/engine/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+200001cc <emulate_standard_16k>:
+200001cc:	23d0      	movs	r3, #208	@ 0xd0
+200001ce:	2280      	movs	r2, #128	@ 0x80
+200001d0:	b5f0      	push	{r4, r5, r6, r7, lr}
+200001d2:	46c6      	mov	lr, r8
+200001d4:	061b      	lsls	r3, r3, #24
+200001d6:	04d2      	lsls	r2, r2, #19
+200001d8:	b500      	push	{lr}
+200001da:	615a      	str	r2, [r3, #20]
+200001dc:	2280      	movs	r2, #128	@ 0x80
+200001de:	0512      	lsls	r2, r2, #20
+200001e0:	615a      	str	r2, [r3, #20]
+200001e2:	2280      	movs	r2, #128	@ 0x80
+200001e4:	0492      	lsls	r2, r2, #18
+200001e6:	4690      	mov	r8, r2
+200001e8:	2280      	movs	r2, #128	@ 0x80
+200001ea:	21c0      	movs	r1, #192	@ 0xc0
+200001ec:	24ff      	movs	r4, #255	@ 0xff
+200001ee:	2680      	movs	r6, #128	@ 0x80
+200001f0:	0192      	lsls	r2, r2, #6
+200001f2:	4694      	mov	ip, r2
+200001f4:	4d15      	ldr	r5, [pc, #84]	@ (2000024c <emulate_standard_16k+0x80>)
+200001f6:	0489      	lsls	r1, r1, #18
+200001f8:	0364      	lsls	r4, r4, #13
+200001fa:	0476      	lsls	r6, r6, #17
+200001fc:	685a      	ldr	r2, [r3, #4]
+200001fe:	0010      	movs	r0, r2
+20000200:	4008      	ands	r0, r1
+20000202:	4288      	cmp	r0, r1
+20000204:	d0fa      	beq.n	200001fc <emulate_standard_16k+0x30>
+20000206:	625c      	str	r4, [r3, #36]	@ 0x24
+20000208:	4232      	tst	r2, r6
+2000020a:	d119      	bne.n	20000240 <emulate_standard_16k+0x74>
+2000020c:	685a      	ldr	r2, [r3, #4]
+2000020e:	4232      	tst	r2, r6
+20000210:	d10a      	bne.n	20000228 <emulate_standard_16k+0x5c>
+20000212:	04d2      	lsls	r2, r2, #19
+20000214:	0cd2      	lsrs	r2, r2, #19
+20000216:	5caa      	ldrb	r2, [r5, r2]
+20000218:	6918      	ldr	r0, [r3, #16]
+2000021a:	0352      	lsls	r2, r2, #13
+2000021c:	4042      	eors	r2, r0
+2000021e:	4022      	ands	r2, r4
+20000220:	61da      	str	r2, [r3, #28]
+20000222:	685a      	ldr	r2, [r3, #4]
+20000224:	4232      	tst	r2, r6
+20000226:	d0f4      	beq.n	20000212 <emulate_standard_16k+0x46>
+20000228:	629c      	str	r4, [r3, #40]	@ 0x28
+2000022a:	e7e7      	b.n	200001fc <emulate_standard_16k+0x30>
+2000022c:	4667      	mov	r7, ip
+2000022e:	04d2      	lsls	r2, r2, #19
+20000230:	0cd2      	lsrs	r2, r2, #19
+20000232:	433a      	orrs	r2, r7
+20000234:	5caa      	ldrb	r2, [r5, r2]
+20000236:	6918      	ldr	r0, [r3, #16]
+20000238:	0352      	lsls	r2, r2, #13
+2000023a:	4042      	eors	r2, r0
+2000023c:	4022      	ands	r2, r4
+2000023e:	61da      	str	r2, [r3, #28]
+20000240:	4640      	mov	r0, r8
+20000242:	685a      	ldr	r2, [r3, #4]
+20000244:	4202      	tst	r2, r0
+20000246:	d0f1      	beq.n	2000022c <emulate_standard_16k+0x60>
+20000248:	629c      	str	r4, [r3, #40]	@ 0x28
+2000024a:	e7d7      	b.n	200001fc <emulate_standard_16k+0x30>
+2000024c:	20005b60 	.word	0x20005b60

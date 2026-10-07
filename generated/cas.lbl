@@ -1,0 +1,6 @@
+al 00C913 .cas_end
+al 00C6A0 .cas_entry
+al 00C786 .cas_open
+al 00C795 .cas_open_read
+al 00C7AB .cas_sio
+al 00C88C .record_sector

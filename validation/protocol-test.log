@@ -1,0 +1,1 @@
+PASS: continuous-noise deadline, CRC vector, full 516-byte frame, 32-bit sequence/LBA, corrupt CRC, UART error, timeout, oversize bounds, version, noise resynchronization.

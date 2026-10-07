@@ -1,0 +1,46 @@
+
+a8duo-cas/build/baseline/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+20000184 <emulate_standard_8k>:
+20000184:	22d0      	movs	r2, #208	@ 0xd0
+20000186:	2380      	movs	r3, #128	@ 0x80
+20000188:	0612      	lsls	r2, r2, #24
+2000018a:	04db      	lsls	r3, r3, #19
+2000018c:	b530      	push	{r4, r5, lr}
+2000018e:	6193      	str	r3, [r2, #24]
+20000190:	2380      	movs	r3, #128	@ 0x80
+20000192:	2180      	movs	r1, #128	@ 0x80
+20000194:	20ff      	movs	r0, #255	@ 0xff
+20000196:	051b      	lsls	r3, r3, #20
+20000198:	4d0b      	ldr	r5, [pc, #44]	@ (200001c8 <emulate_standard_8k+0x44>)
+2000019a:	6153      	str	r3, [r2, #20]
+2000019c:	0489      	lsls	r1, r1, #18
+2000019e:	0340      	lsls	r0, r0, #13
+200001a0:	6853      	ldr	r3, [r2, #4]
+200001a2:	420b      	tst	r3, r1
+200001a4:	d1fc      	bne.n	200001a0 <emulate_standard_8k+0x1c>
+200001a6:	6250      	str	r0, [r2, #36]	@ 0x24
+200001a8:	6853      	ldr	r3, [r2, #4]
+200001aa:	420b      	tst	r3, r1
+200001ac:	d10a      	bne.n	200001c4 <emulate_standard_8k+0x40>
+200001ae:	04db      	lsls	r3, r3, #19
+200001b0:	0cdb      	lsrs	r3, r3, #19
+200001b2:	5ceb      	ldrb	r3, [r5, r3]
+200001b4:	6914      	ldr	r4, [r2, #16]
+200001b6:	035b      	lsls	r3, r3, #13
+200001b8:	4063      	eors	r3, r4
+200001ba:	4003      	ands	r3, r0
+200001bc:	61d3      	str	r3, [r2, #28]
+200001be:	6853      	ldr	r3, [r2, #4]
+200001c0:	420b      	tst	r3, r1
+200001c2:	d0f4      	beq.n	200001ae <emulate_standard_8k+0x2a>
+200001c4:	6290      	str	r0, [r2, #40]	@ 0x28
+200001c6:	e7eb      	b.n	200001a0 <emulate_standard_8k+0x1c>
+200001c8:	20005b60 	.word	0x20005b60

@@ -1,0 +1,100 @@
+
+a8duo-cas/build/engine/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+2000108c <feed_XEX_loader>:
+2000108c:	22d0      	movs	r2, #208	@ 0xd0
+2000108e:	2380      	movs	r3, #128	@ 0x80
+20001090:	b5f0      	push	{r4, r5, r6, r7, lr}
+20001092:	464e      	mov	r6, r9
+20001094:	46de      	mov	lr, fp
+20001096:	4645      	mov	r5, r8
+20001098:	4657      	mov	r7, sl
+2000109a:	0612      	lsls	r2, r2, #24
+2000109c:	04db      	lsls	r3, r3, #19
+2000109e:	b5e0      	push	{r5, r6, r7, lr}
+200010a0:	6193      	str	r3, [r2, #24]
+200010a2:	2380      	movs	r3, #128	@ 0x80
+200010a4:	051b      	lsls	r3, r3, #20
+200010a6:	6193      	str	r3, [r2, #24]
+200010a8:	4b24      	ldr	r3, [pc, #144]	@ (2000113c <feed_XEX_loader+0xb0>)
+200010aa:	b083      	sub	sp, #12
+200010ac:	4698      	mov	r8, r3
+200010ae:	9301      	str	r3, [sp, #4]
+200010b0:	2300      	movs	r3, #0
+200010b2:	469c      	mov	ip, r3
+200010b4:	2380      	movs	r3, #128	@ 0x80
+200010b6:	041b      	lsls	r3, r3, #16
+200010b8:	469b      	mov	fp, r3
+200010ba:	23ff      	movs	r3, #255	@ 0xff
+200010bc:	2180      	movs	r1, #128	@ 0x80
+200010be:	2480      	movs	r4, #128	@ 0x80
+200010c0:	20ff      	movs	r0, #255	@ 0xff
+200010c2:	021b      	lsls	r3, r3, #8
+200010c4:	26ff      	movs	r6, #255	@ 0xff
+200010c6:	4699      	mov	r9, r3
+200010c8:	03c9      	lsls	r1, r1, #15
+200010ca:	03a4      	lsls	r4, r4, #14
+200010cc:	0340      	lsls	r0, r0, #13
+200010ce:	6853      	ldr	r3, [r2, #4]
+200010d0:	420b      	tst	r3, r1
+200010d2:	d0fc      	beq.n	200010ce <feed_XEX_loader+0x42>
+200010d4:	4223      	tst	r3, r4
+200010d6:	d10e      	bne.n	200010f6 <feed_XEX_loader+0x6a>
+200010d8:	0037      	movs	r7, r6
+200010da:	465d      	mov	r5, fp
+200010dc:	401f      	ands	r7, r3
+200010de:	422b      	tst	r3, r5
+200010e0:	d00e      	beq.n	20001100 <feed_XEX_loader+0x74>
+200010e2:	6250      	str	r0, [r2, #36]	@ 0x24
+200010e4:	6913      	ldr	r3, [r2, #16]
+200010e6:	469a      	mov	sl, r3
+200010e8:	4655      	mov	r5, sl
+200010ea:	9b01      	ldr	r3, [sp, #4]
+200010ec:	5ddb      	ldrb	r3, [r3, r7]
+200010ee:	035b      	lsls	r3, r3, #13
+200010f0:	406b      	eors	r3, r5
+200010f2:	4003      	ands	r3, r0
+200010f4:	61d3      	str	r3, [r2, #28]
+200010f6:	6853      	ldr	r3, [r2, #4]
+200010f8:	420b      	tst	r3, r1
+200010fa:	d1fc      	bne.n	200010f6 <feed_XEX_loader+0x6a>
+200010fc:	6290      	str	r0, [r2, #40]	@ 0x28
+200010fe:	e7e6      	b.n	200010ce <feed_XEX_loader+0x42>
+20001100:	001d      	movs	r5, r3
+20001102:	6853      	ldr	r3, [r2, #4]
+20001104:	420b      	tst	r3, r1
+20001106:	d1fb      	bne.n	20001100 <feed_XEX_loader+0x74>
+20001108:	0b6d      	lsrs	r5, r5, #13
+2000110a:	2f00      	cmp	r7, #0
+2000110c:	d10c      	bne.n	20001128 <feed_XEX_loader+0x9c>
+2000110e:	4663      	mov	r3, ip
+20001110:	464f      	mov	r7, r9
+20001112:	4035      	ands	r5, r6
+20001114:	403b      	ands	r3, r7
+20001116:	431d      	orrs	r5, r3
+20001118:	46ac      	mov	ip, r5
+2000111a:	4663      	mov	r3, ip
+2000111c:	05dd      	lsls	r5, r3, #23
+2000111e:	0bed      	lsrs	r5, r5, #15
+20001120:	002b      	movs	r3, r5
+20001122:	4443      	add	r3, r8
+20001124:	9301      	str	r3, [sp, #4]
+20001126:	e7e6      	b.n	200010f6 <feed_XEX_loader+0x6a>
+20001128:	2f01      	cmp	r7, #1
+2000112a:	d1f6      	bne.n	2000111a <feed_XEX_loader+0x8e>
+2000112c:	4663      	mov	r3, ip
+2000112e:	062d      	lsls	r5, r5, #24
+20001130:	4033      	ands	r3, r6
+20001132:	0c2d      	lsrs	r5, r5, #16
+20001134:	431d      	orrs	r5, r3
+20001136:	46ac      	mov	ip, r5
+20001138:	e7ef      	b.n	2000111a <feed_XEX_loader+0x8e>
+2000113a:	46c0      	nop			@ (mov r8, r8)
+2000113c:	20005b60 	.word	0x20005b60

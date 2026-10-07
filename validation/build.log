@@ -1,0 +1,14 @@
+[  3%] Performing build step for 'ELF2UF2Build'
+[  3%] Built target bs2_default
+[  5%] Built target bs2_default_padded_checksummed_asm
+[100%] Built target elf2uf2
+[  6%] No install step for 'ELF2UF2Build'
+[  7%] Completed 'ELF2UF2Build'
+[ 13%] Built target ELF2UF2Build
+[ 16%] Building C object CMakeFiles/a8_pico_cart.dir/cas_menu.c.obj
+[ 16%] Building C object CMakeFiles/a8_pico_cart.dir/dual_menu.c.obj
+[ 16%] Building C object CMakeFiles/a8_pico_cart.dir/cas_file.c.obj
+[ 17%] Building C object CMakeFiles/a8_pico_cart.dir/game_virtual.c.obj
+[ 18%] Building C object CMakeFiles/a8_pico_cart.dir/atari_cart.c.obj
+[ 19%] Linking C executable a8_pico_cart.elf
+[100%] Built target a8_pico_cart

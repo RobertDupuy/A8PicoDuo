@@ -1,0 +1,90 @@
+
+a8duo-cas/build/baseline/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+20000d88 <emulate_blizzard>:
+20000d88:	22d0      	movs	r2, #208	@ 0xd0
+20000d8a:	2380      	movs	r3, #128	@ 0x80
+20000d8c:	b5f0      	push	{r4, r5, r6, r7, lr}
+20000d8e:	4645      	mov	r5, r8
+20000d90:	46de      	mov	lr, fp
+20000d92:	464e      	mov	r6, r9
+20000d94:	4657      	mov	r7, sl
+20000d96:	04db      	lsls	r3, r3, #19
+20000d98:	0612      	lsls	r2, r2, #24
+20000d9a:	b5e0      	push	{r5, r6, r7, lr}
+20000d9c:	469b      	mov	fp, r3
+20000d9e:	6153      	str	r3, [r2, #20]
+20000da0:	2380      	movs	r3, #128	@ 0x80
+20000da2:	051b      	lsls	r3, r3, #20
+20000da4:	6153      	str	r3, [r2, #20]
+20000da6:	2301      	movs	r3, #1
+20000da8:	469c      	mov	ip, r3
+20000daa:	4b1e      	ldr	r3, [pc, #120]	@ (20000e24 <emulate_blizzard+0x9c>)
+20000dac:	2180      	movs	r1, #128	@ 0x80
+20000dae:	4699      	mov	r9, r3
+20000db0:	2380      	movs	r3, #128	@ 0x80
+20000db2:	2480      	movs	r4, #128	@ 0x80
+20000db4:	20ff      	movs	r0, #255	@ 0xff
+20000db6:	039b      	lsls	r3, r3, #14
+20000db8:	2501      	movs	r5, #1
+20000dba:	4698      	mov	r8, r3
+20000dbc:	03c9      	lsls	r1, r1, #15
+20000dbe:	0464      	lsls	r4, r4, #17
+20000dc0:	0340      	lsls	r0, r0, #13
+20000dc2:	6853      	ldr	r3, [r2, #4]
+20000dc4:	420b      	tst	r3, r1
+20000dc6:	d0fc      	beq.n	20000dc2 <emulate_blizzard+0x3a>
+20000dc8:	4223      	tst	r3, r4
+20000dca:	d110      	bne.n	20000dee <emulate_blizzard+0x66>
+20000dcc:	2d00      	cmp	r5, #0
+20000dce:	d00e      	beq.n	20000dee <emulate_blizzard+0x66>
+20000dd0:	6250      	str	r0, [r2, #36]	@ 0x24
+20000dd2:	04db      	lsls	r3, r3, #19
+20000dd4:	6917      	ldr	r7, [r2, #16]
+20000dd6:	0cdb      	lsrs	r3, r3, #19
+20000dd8:	464e      	mov	r6, r9
+20000dda:	5cf3      	ldrb	r3, [r6, r3]
+20000ddc:	035b      	lsls	r3, r3, #13
+20000dde:	407b      	eors	r3, r7
+20000de0:	4003      	ands	r3, r0
+20000de2:	61d3      	str	r3, [r2, #28]
+20000de4:	6853      	ldr	r3, [r2, #4]
+20000de6:	420b      	tst	r3, r1
+20000de8:	d1fc      	bne.n	20000de4 <emulate_blizzard+0x5c>
+20000dea:	6290      	str	r0, [r2, #40]	@ 0x28
+20000dec:	e7e9      	b.n	20000dc2 <emulate_blizzard+0x3a>
+20000dee:	2680      	movs	r6, #128	@ 0x80
+20000df0:	04b6      	lsls	r6, r6, #18
+20000df2:	4233      	tst	r3, r6
+20000df4:	d10a      	bne.n	20000e0c <emulate_blizzard+0x84>
+20000df6:	4667      	mov	r7, ip
+20000df8:	2f00      	cmp	r7, #0
+20000dfa:	d007      	beq.n	20000e0c <emulate_blizzard+0x84>
+20000dfc:	2680      	movs	r6, #128	@ 0x80
+20000dfe:	04db      	lsls	r3, r3, #19
+20000e00:	6250      	str	r0, [r2, #36]	@ 0x24
+20000e02:	0cdb      	lsrs	r3, r3, #19
+20000e04:	01b6      	lsls	r6, r6, #6
+20000e06:	6917      	ldr	r7, [r2, #16]
+20000e08:	4333      	orrs	r3, r6
+20000e0a:	e7e5      	b.n	20000dd8 <emulate_blizzard+0x50>
+20000e0c:	4647      	mov	r7, r8
+20000e0e:	423b      	tst	r3, r7
+20000e10:	d1e8      	bne.n	20000de4 <emulate_blizzard+0x5c>
+20000e12:	465b      	mov	r3, fp
+20000e14:	6193      	str	r3, [r2, #24]
+20000e16:	2380      	movs	r3, #128	@ 0x80
+20000e18:	051b      	lsls	r3, r3, #20
+20000e1a:	6193      	str	r3, [r2, #24]
+20000e1c:	2300      	movs	r3, #0
+20000e1e:	2500      	movs	r5, #0
+20000e20:	469c      	mov	ip, r3
+20000e22:	e7df      	b.n	20000de4 <emulate_blizzard+0x5c>
+20000e24:	20005b60 	.word	0x20005b60

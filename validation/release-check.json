@@ -1,0 +1,18 @@
+{
+  "uf2_sha256": "e3a1d5a5da594a1f8d6ff205ebcdb76a4668ca9c4a72f62f7f8c41952e9af15b",
+  "uf2_bytes": 196608,
+  "blocks": 384,
+  "flash_start": "0x10000000",
+  "flash_end_exclusive": "0x10018000",
+  "storage_starts": "0x10100000",
+  "binary_bytes": 98088,
+  "boot2_identical": true,
+  "modified_existing_files": [
+    "firmware/engine/CMakeLists.txt",
+    "firmware/engine/atari_cart.c",
+    "firmware/engine/dual_menu.c",
+    "firmware/engine/game_virtual.c"
+  ],
+  "unchanged_existing_firmware_files": 45,
+  "game_files_unchanged": 31
+}

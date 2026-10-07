@@ -1,0 +1,5 @@
+al 000700 .boot
+al 00085A .finished
+al 000715 .init
+al 000900 .low_payload
+al 00071B .run

@@ -1,0 +1,104 @@
+
+a8duo-cas/build/engine/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+20000e28 <emulate_turbosoft>:
+20000e28:	23d0      	movs	r3, #208	@ 0xd0
+20000e2a:	2280      	movs	r2, #128	@ 0x80
+20000e2c:	b5f0      	push	{r4, r5, r6, r7, lr}
+20000e2e:	46de      	mov	lr, fp
+20000e30:	4657      	mov	r7, sl
+20000e32:	464e      	mov	r6, r9
+20000e34:	4645      	mov	r5, r8
+20000e36:	061b      	lsls	r3, r3, #24
+20000e38:	04d2      	lsls	r2, r2, #19
+20000e3a:	b5e0      	push	{r5, r6, r7, lr}
+20000e3c:	619a      	str	r2, [r3, #24]
+20000e3e:	2280      	movs	r2, #128	@ 0x80
+20000e40:	0512      	lsls	r2, r2, #20
+20000e42:	b083      	sub	sp, #12
+20000e44:	615a      	str	r2, [r3, #20]
+20000e46:	2840      	cmp	r0, #64	@ 0x40
+20000e48:	d046      	beq.n	20000ed8 <emulate_turbosoft+0xb0>
+20000e4a:	2880      	cmp	r0, #128	@ 0x80
+20000e4c:	d031      	beq.n	20000eb2 <emulate_turbosoft+0x8a>
+20000e4e:	2300      	movs	r3, #0
+20000e50:	4699      	mov	r9, r3
+20000e52:	2300      	movs	r3, #0
+20000e54:	469c      	mov	ip, r3
+20000e56:	4b22      	ldr	r3, [pc, #136]	@ (20000ee0 <emulate_turbosoft+0xb8>)
+20000e58:	22d0      	movs	r2, #208	@ 0xd0
+20000e5a:	9301      	str	r3, [sp, #4]
+20000e5c:	2310      	movs	r3, #16
+20000e5e:	469a      	mov	sl, r3
+20000e60:	2380      	movs	r3, #128	@ 0x80
+20000e62:	2180      	movs	r1, #128	@ 0x80
+20000e64:	2480      	movs	r4, #128	@ 0x80
+20000e66:	2780      	movs	r7, #128	@ 0x80
+20000e68:	20ff      	movs	r0, #255	@ 0xff
+20000e6a:	051b      	lsls	r3, r3, #20
+20000e6c:	2601      	movs	r6, #1
+20000e6e:	469b      	mov	fp, r3
+20000e70:	0612      	lsls	r2, r2, #24
+20000e72:	03c9      	lsls	r1, r1, #15
+20000e74:	04a4      	lsls	r4, r4, #18
+20000e76:	03bf      	lsls	r7, r7, #14
+20000e78:	0340      	lsls	r0, r0, #13
+20000e7a:	6853      	ldr	r3, [r2, #4]
+20000e7c:	420b      	tst	r3, r1
+20000e7e:	d0fc      	beq.n	20000e7a <emulate_turbosoft+0x52>
+20000e80:	4223      	tst	r3, r4
+20000e82:	d119      	bne.n	20000eb8 <emulate_turbosoft+0x90>
+20000e84:	2e00      	cmp	r6, #0
+20000e86:	d017      	beq.n	20000eb8 <emulate_turbosoft+0x90>
+20000e88:	6250      	str	r0, [r2, #36]	@ 0x24
+20000e8a:	6915      	ldr	r5, [r2, #16]
+20000e8c:	04db      	lsls	r3, r3, #19
+20000e8e:	9500      	str	r5, [sp, #0]
+20000e90:	4665      	mov	r5, ip
+20000e92:	036d      	lsls	r5, r5, #13
+20000e94:	46a8      	mov	r8, r5
+20000e96:	0cdb      	lsrs	r3, r3, #19
+20000e98:	9d01      	ldr	r5, [sp, #4]
+20000e9a:	4443      	add	r3, r8
+20000e9c:	5ceb      	ldrb	r3, [r5, r3]
+20000e9e:	9d00      	ldr	r5, [sp, #0]
+20000ea0:	035b      	lsls	r3, r3, #13
+20000ea2:	406b      	eors	r3, r5
+20000ea4:	4003      	ands	r3, r0
+20000ea6:	61d3      	str	r3, [r2, #28]
+20000ea8:	6853      	ldr	r3, [r2, #4]
+20000eaa:	420b      	tst	r3, r1
+20000eac:	d1fc      	bne.n	20000ea8 <emulate_turbosoft+0x80>
+20000eae:	6290      	str	r0, [r2, #40]	@ 0x28
+20000eb0:	e7e3      	b.n	20000e7a <emulate_turbosoft+0x52>
+20000eb2:	230f      	movs	r3, #15
+20000eb4:	4699      	mov	r9, r3
+20000eb6:	e7cc      	b.n	20000e52 <emulate_turbosoft+0x2a>
+20000eb8:	423b      	tst	r3, r7
+20000eba:	d1f5      	bne.n	20000ea8 <emulate_turbosoft+0x80>
+20000ebc:	464d      	mov	r5, r9
+20000ebe:	401d      	ands	r5, r3
+20000ec0:	46ac      	mov	ip, r5
+20000ec2:	4655      	mov	r5, sl
+20000ec4:	422b      	tst	r3, r5
+20000ec6:	d003      	beq.n	20000ed0 <emulate_turbosoft+0xa8>
+20000ec8:	465b      	mov	r3, fp
+20000eca:	2600      	movs	r6, #0
+20000ecc:	6193      	str	r3, [r2, #24]
+20000ece:	e7eb      	b.n	20000ea8 <emulate_turbosoft+0x80>
+20000ed0:	465b      	mov	r3, fp
+20000ed2:	2601      	movs	r6, #1
+20000ed4:	6153      	str	r3, [r2, #20]
+20000ed6:	e7e7      	b.n	20000ea8 <emulate_turbosoft+0x80>
+20000ed8:	2307      	movs	r3, #7
+20000eda:	4699      	mov	r9, r3
+20000edc:	e7b9      	b.n	20000e52 <emulate_turbosoft+0x2a>
+20000ede:	46c0      	nop			@ (mov r8, r8)
+20000ee0:	20005b60 	.word	0x20005b60

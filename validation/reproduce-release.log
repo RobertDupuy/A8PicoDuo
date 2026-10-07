@@ -1,0 +1,21 @@
+CAS runtime: 627 bytes at $C6A0; reserved filler and original vectors verified.
+PICO_SDK_PATH is /workspace/scratch/a065053e89fe/a8duo-cas/tools/pico-sdk-1.5.1
+PICO platform is rp2040.
+Build type is Release
+PICO target board is myboard.
+Using board configuration from /workspace/scratch/a065053e89fe/a8duo-cas/firmware/engine/myboard.h
+TinyUSB available at /workspace/scratch/a065053e89fe/a8duo-cas/tools/pico-sdk-1.5.1/lib/tinyusb/src/portable/raspberrypi/rp2040; enabling build support for USB.
+-- Configuring done (0.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/scratch/a065053e89fe/a8duo-cas/build/engine
+[  1%] Performing build step for 'ELF2UF2Build'
+[  3%] Built target bs2_default
+[  5%] Built target bs2_default_padded_checksummed_asm
+[100%] Built target elf2uf2
+[  6%] No install step for 'ELF2UF2Build'
+[  7%] Completed 'ELF2UF2Build'
+[ 13%] Built target ELF2UF2Build
+[ 14%] Building C object CMakeFiles/a8_pico_cart.dir/cas_file.c.obj
+[ 15%] Linking C executable a8_pico_cart.elf
+[100%] Built target a8_pico_cart
+Generated 15 CAS fixtures, including visible PASS/FAIL diagnostic.

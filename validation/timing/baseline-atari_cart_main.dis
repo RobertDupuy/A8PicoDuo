@@ -1,0 +1,423 @@
+
+a8duo-cas/build/baseline/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+20001140 <atari_cart_main>:
+20001140:	b5f0      	push	{r4, r5, r6, r7, lr}
+20001142:	46de      	mov	lr, fp
+20001144:	4657      	mov	r7, sl
+20001146:	464e      	mov	r6, r9
+20001148:	4645      	mov	r5, r8
+2000114a:	b5e0      	push	{r5, r6, r7, lr}
+2000114c:	4cd1      	ldr	r4, [pc, #836]	@ (20001494 <atari_cart_main+0x354>)
+2000114e:	48d2      	ldr	r0, [pc, #840]	@ (20001498 <atari_cart_main+0x358>)
+20001150:	44a5      	add	sp, r4
+20001152:	f001 f835 	bl	200021c0 <__gpio_init_mask_veneer>
+20001156:	23d0      	movs	r3, #208	@ 0xd0
+20001158:	4ad0      	ldr	r2, [pc, #832]	@ (2000149c <atari_cart_main+0x35c>)
+2000115a:	061b      	lsls	r3, r3, #24
+2000115c:	629a      	str	r2, [r3, #40]	@ 0x28
+2000115e:	3201      	adds	r2, #1
+20001160:	625a      	str	r2, [r3, #36]	@ 0x24
+20001162:	2280      	movs	r2, #128	@ 0x80
+20001164:	0512      	lsls	r2, r2, #20
+20001166:	625a      	str	r2, [r3, #36]	@ 0x24
+20001168:	4669      	mov	r1, sp
+2000116a:	48cd      	ldr	r0, [pc, #820]	@ (200014a0 <atari_cart_main+0x360>)
+2000116c:	ab48      	add	r3, sp, #288	@ 0x120
+2000116e:	aa08      	add	r2, sp, #32
+20001170:	f001 f8be 	bl	200022f0 <__check_sys_clock_khz_veneer>
+20001174:	2800      	cmp	r0, #0
+20001176:	d103      	bne.n	20001180 <atari_cart_main+0x40>
+20001178:	48ca      	ldr	r0, [pc, #808]	@ (200014a4 <atari_cart_main+0x364>)
+2000117a:	49c9      	ldr	r1, [pc, #804]	@ (200014a0 <atari_cart_main+0x360>)
+2000117c:	f001 f848 	bl	20002210 <__panic_veneer>
+20001180:	9a48      	ldr	r2, [sp, #288]	@ 0x120
+20001182:	9908      	ldr	r1, [sp, #32]
+20001184:	9800      	ldr	r0, [sp, #0]
+20001186:	f001 f80b 	bl	200021a0 <__set_sys_clock_pll_veneer>
+2000118a:	2280      	movs	r2, #128	@ 0x80
+2000118c:	2400      	movs	r4, #0
+2000118e:	2100      	movs	r1, #0
+20001190:	0052      	lsls	r2, r2, #1
+20001192:	a808      	add	r0, sp, #32
+20001194:	f001 f87c 	bl	20002290 <____wrap_memset_veneer>
+20001198:	4bc3      	ldr	r3, [pc, #780]	@ (200014a8 <atari_cart_main+0x368>)
+2000119a:	0026      	movs	r6, r4
+2000119c:	469a      	mov	sl, r3
+2000119e:	4bc3      	ldr	r3, [pc, #780]	@ (200014ac <atari_cart_main+0x36c>)
+200011a0:	4dc3      	ldr	r5, [pc, #780]	@ (200014b0 <atari_cart_main+0x370>)
+200011a2:	4699      	mov	r9, r3
+200011a4:	4bc3      	ldr	r3, [pc, #780]	@ (200014b4 <atari_cart_main+0x374>)
+200011a6:	4698      	mov	r8, r3
+200011a8:	0020      	movs	r0, r4
+200011aa:	f7fe ff89 	bl	200000c0 <emulate_boot_rom>
+200011ae:	2823      	cmp	r0, #35	@ 0x23
+200011b0:	dc13      	bgt.n	200011da <atari_cart_main+0x9a>
+200011b2:	2800      	cmp	r0, #0
+200011b4:	dbf8      	blt.n	200011a8 <atari_cart_main+0x68>
+200011b6:	2823      	cmp	r0, #35	@ 0x23
+200011b8:	d8f6      	bhi.n	200011a8 <atari_cart_main+0x68>
+200011ba:	0080      	lsls	r0, r0, #2
+200011bc:	582b      	ldr	r3, [r5, r0]
+200011be:	469f      	mov	pc, r3
+200011c0:	2210      	movs	r2, #16
+200011c2:	4648      	mov	r0, r9
+200011c4:	49bc      	ldr	r1, [pc, #752]	@ (200014b8 <atari_cart_main+0x378>)
+200011c6:	f001 f85b 	bl	20002280 <____wrap_memcpy_veneer>
+200011ca:	2300      	movs	r3, #0
+200011cc:	4652      	mov	r2, sl
+200011ce:	0020      	movs	r0, r4
+200011d0:	7053      	strb	r3, [r2, #1]
+200011d2:	f7fe ff75 	bl	200000c0 <emulate_boot_rom>
+200011d6:	2823      	cmp	r0, #35	@ 0x23
+200011d8:	ddeb      	ble.n	200011b2 <atari_cart_main+0x72>
+200011da:	28fe      	cmp	r0, #254	@ 0xfe
+200011dc:	d100      	bne.n	200011e0 <atari_cart_main+0xa0>
+200011de:	e0f8      	b.n	200013d2 <atari_cart_main+0x292>
+200011e0:	28ff      	cmp	r0, #255	@ 0xff
+200011e2:	d100      	bne.n	200011e6 <atari_cart_main+0xa6>
+200011e4:	e0f7      	b.n	200013d6 <atari_cart_main+0x296>
+200011e6:	28f0      	cmp	r0, #240	@ 0xf0
+200011e8:	d1de      	bne.n	200011a8 <atari_cart_main+0x68>
+200011ea:	f001 f869 	bl	200022c0 <__create_fatfs_disk_veneer>
+200011ee:	e7db      	b.n	200011a8 <atari_cart_main+0x68>
+200011f0:	4bb2      	ldr	r3, [pc, #712]	@ (200014bc <atari_cart_main+0x37c>)
+200011f2:	781a      	ldrb	r2, [r3, #0]
+200011f4:	2a00      	cmp	r2, #0
+200011f6:	d100      	bne.n	200011fa <atari_cart_main+0xba>
+200011f8:	e0f9      	b.n	200013ee <atari_cart_main+0x2ae>
+200011fa:	4642      	mov	r2, r8
+200011fc:	4657      	mov	r7, sl
+200011fe:	7811      	ldrb	r1, [r2, #0]
+20001200:	7852      	ldrb	r2, [r2, #1]
+20001202:	78f8      	ldrb	r0, [r7, #3]
+20001204:	0212      	lsls	r2, r2, #8
+20001206:	430a      	orrs	r2, r1
+20001208:	d01e      	beq.n	20001248 <atari_cart_main+0x108>
+2000120a:	2a03      	cmp	r2, #3
+2000120c:	d900      	bls.n	20001210 <atari_cart_main+0xd0>
+2000120e:	e116      	b.n	2000143e <atari_cart_main+0x2fe>
+20001210:	01d1      	lsls	r1, r2, #7
+20001212:	3970      	subs	r1, #112	@ 0x70
+20001214:	228a      	movs	r2, #138	@ 0x8a
+20001216:	0052      	lsls	r2, r2, #1
+20001218:	589b      	ldr	r3, [r3, r2]
+2000121a:	3b7f      	subs	r3, #127	@ 0x7f
+2000121c:	428b      	cmp	r3, r1
+2000121e:	dd13      	ble.n	20001248 <atari_cart_main+0x108>
+20001220:	4ba7      	ldr	r3, [pc, #668]	@ (200014c0 <atari_cart_main+0x380>)
+20001222:	0018      	movs	r0, r3
+20001224:	469b      	mov	fp, r3
+20001226:	f001 f86b 	bl	20002300 <____wrap_f_lseek_veneer>
+2000122a:	2800      	cmp	r0, #0
+2000122c:	d10c      	bne.n	20001248 <atari_cart_main+0x108>
+2000122e:	466b      	mov	r3, sp
+20001230:	2280      	movs	r2, #128	@ 0x80
+20001232:	4658      	mov	r0, fp
+20001234:	49a3      	ldr	r1, [pc, #652]	@ (200014c4 <atari_cart_main+0x384>)
+20001236:	f001 f86b 	bl	20002310 <____wrap_f_write_veneer>
+2000123a:	2800      	cmp	r0, #0
+2000123c:	d104      	bne.n	20001248 <atari_cart_main+0x108>
+2000123e:	4658      	mov	r0, fp
+20001240:	f000 ffb6 	bl	200021b0 <____wrap_f_sync_veneer>
+20001244:	2800      	cmp	r0, #0
+20001246:	d029      	beq.n	2000129c <atari_cart_main+0x15c>
+20001248:	2302      	movs	r3, #2
+2000124a:	707b      	strb	r3, [r7, #1]
+2000124c:	e7ac      	b.n	200011a8 <atari_cart_main+0x68>
+2000124e:	4b9b      	ldr	r3, [pc, #620]	@ (200014bc <atari_cart_main+0x37c>)
+20001250:	781a      	ldrb	r2, [r3, #0]
+20001252:	2a00      	cmp	r2, #0
+20001254:	d100      	bne.n	20001258 <atari_cart_main+0x118>
+20001256:	e0ca      	b.n	200013ee <atari_cart_main+0x2ae>
+20001258:	4f93      	ldr	r7, [pc, #588]	@ (200014a8 <atari_cart_main+0x368>)
+2000125a:	78ba      	ldrb	r2, [r7, #2]
+2000125c:	7879      	ldrb	r1, [r7, #1]
+2000125e:	0212      	lsls	r2, r2, #8
+20001260:	78f8      	ldrb	r0, [r7, #3]
+20001262:	430a      	orrs	r2, r1
+20001264:	d0f0      	beq.n	20001248 <atari_cart_main+0x108>
+20001266:	2a03      	cmp	r2, #3
+20001268:	d900      	bls.n	2000126c <atari_cart_main+0x12c>
+2000126a:	e0f2      	b.n	20001452 <atari_cart_main+0x312>
+2000126c:	01d1      	lsls	r1, r2, #7
+2000126e:	3970      	subs	r1, #112	@ 0x70
+20001270:	228a      	movs	r2, #138	@ 0x8a
+20001272:	0052      	lsls	r2, r2, #1
+20001274:	589b      	ldr	r3, [r3, r2]
+20001276:	3b7f      	subs	r3, #127	@ 0x7f
+20001278:	428b      	cmp	r3, r1
+2000127a:	dc00      	bgt.n	2000127e <atari_cart_main+0x13e>
+2000127c:	e101      	b.n	20001482 <atari_cart_main+0x342>
+2000127e:	4b90      	ldr	r3, [pc, #576]	@ (200014c0 <atari_cart_main+0x380>)
+20001280:	0018      	movs	r0, r3
+20001282:	469b      	mov	fp, r3
+20001284:	f001 f83c 	bl	20002300 <____wrap_f_lseek_veneer>
+20001288:	2800      	cmp	r0, #0
+2000128a:	d1dd      	bne.n	20001248 <atari_cart_main+0x108>
+2000128c:	466b      	mov	r3, sp
+2000128e:	2280      	movs	r2, #128	@ 0x80
+20001290:	4658      	mov	r0, fp
+20001292:	4986      	ldr	r1, [pc, #536]	@ (200014ac <atari_cart_main+0x36c>)
+20001294:	f000 ffc4 	bl	20002220 <____wrap_f_read_veneer>
+20001298:	2800      	cmp	r0, #0
+2000129a:	d1d5      	bne.n	20001248 <atari_cart_main+0x108>
+2000129c:	9b00      	ldr	r3, [sp, #0]
+2000129e:	3b80      	subs	r3, #128	@ 0x80
+200012a0:	1e5a      	subs	r2, r3, #1
+200012a2:	4193      	sbcs	r3, r2
+200012a4:	005b      	lsls	r3, r3, #1
+200012a6:	707b      	strb	r3, [r7, #1]
+200012a8:	e77e      	b.n	200011a8 <atari_cart_main+0x68>
+200012aa:	4882      	ldr	r0, [pc, #520]	@ (200014b4 <atari_cart_main+0x374>)
+200012ac:	2280      	movs	r2, #128	@ 0x80
+200012ae:	1e43      	subs	r3, r0, #1
+200012b0:	7819      	ldrb	r1, [r3, #0]
+200012b2:	4b85      	ldr	r3, [pc, #532]	@ (200014c8 <atari_cart_main+0x388>)
+200012b4:	01c9      	lsls	r1, r1, #7
+200012b6:	18c9      	adds	r1, r1, r3
+200012b8:	f000 ffe2 	bl	20002280 <____wrap_memcpy_veneer>
+200012bc:	e774      	b.n	200011a8 <atari_cart_main+0x68>
+200012be:	4883      	ldr	r0, [pc, #524]	@ (200014cc <atari_cart_main+0x38c>)
+200012c0:	f000 ffb6 	bl	20002230 <__load_file_veneer>
+200012c4:	2800      	cmp	r0, #0
+200012c6:	d100      	bne.n	200012ca <atari_cart_main+0x18a>
+200012c8:	e0b2      	b.n	20001430 <atari_cart_main+0x2f0>
+200012ca:	2300      	movs	r3, #0
+200012cc:	4f76      	ldr	r7, [pc, #472]	@ (200014a8 <atari_cart_main+0x368>)
+200012ce:	707b      	strb	r3, [r7, #1]
+200012d0:	e76a      	b.n	200011a8 <atari_cart_main+0x68>
+200012d2:	4f75      	ldr	r7, [pc, #468]	@ (200014a8 <atari_cart_main+0x368>)
+200012d4:	4668      	mov	r0, sp
+200012d6:	0039      	movs	r1, r7
+200012d8:	f000 ffca 	bl	20002270 <__strcpy_veneer>
+200012dc:	4669      	mov	r1, sp
+200012de:	a808      	add	r0, sp, #32
+200012e0:	f000 fff6 	bl	200022d0 <__search_directory_veneer>
+200012e4:	2800      	cmp	r0, #0
+200012e6:	d01d      	beq.n	20001324 <atari_cart_main+0x1e4>
+200012e8:	2300      	movs	r3, #0
+200012ea:	707b      	strb	r3, [r7, #1]
+200012ec:	4b78      	ldr	r3, [pc, #480]	@ (200014d0 <atari_cart_main+0x390>)
+200012ee:	681b      	ldr	r3, [r3, #0]
+200012f0:	70bb      	strb	r3, [r7, #2]
+200012f2:	e759      	b.n	200011a8 <atari_cart_main+0x68>
+200012f4:	466a      	mov	r2, sp
+200012f6:	2120      	movs	r1, #32
+200012f8:	2300      	movs	r3, #0
+200012fa:	1852      	adds	r2, r2, r1
+200012fc:	7013      	strb	r3, [r2, #0]
+200012fe:	e753      	b.n	200011a8 <atari_cart_main+0x68>
+20001300:	4f69      	ldr	r7, [pc, #420]	@ (200014a8 <atari_cart_main+0x368>)
+20001302:	4a71      	ldr	r2, [pc, #452]	@ (200014c8 <atari_cart_main+0x388>)
+20001304:	783b      	ldrb	r3, [r7, #0]
+20001306:	1cb8      	adds	r0, r7, #2
+20001308:	021b      	lsls	r3, r3, #8
+2000130a:	1899      	adds	r1, r3, r2
+2000130c:	5cd3      	ldrb	r3, [r2, r3]
+2000130e:	310e      	adds	r1, #14
+20001310:	707b      	strb	r3, [r7, #1]
+20001312:	f000 ffad 	bl	20002270 <__strcpy_veneer>
+20001316:	e747      	b.n	200011a8 <atari_cart_main+0x68>
+20001318:	a808      	add	r0, sp, #32
+2000131a:	f000 ff59 	bl	200021d0 <__read_directory_veneer>
+2000131e:	4f62      	ldr	r7, [pc, #392]	@ (200014a8 <atari_cart_main+0x368>)
+20001320:	2800      	cmp	r0, #0
+20001322:	d1e1      	bne.n	200012e8 <atari_cart_main+0x1a8>
+20001324:	2301      	movs	r3, #1
+20001326:	496b      	ldr	r1, [pc, #428]	@ (200014d4 <atari_cart_main+0x394>)
+20001328:	4860      	ldr	r0, [pc, #384]	@ (200014ac <atari_cart_main+0x36c>)
+2000132a:	707b      	strb	r3, [r7, #1]
+2000132c:	f000 ffa0 	bl	20002270 <__strcpy_veneer>
+20001330:	e73a      	b.n	200011a8 <atari_cart_main+0x68>
+20001332:	4f5d      	ldr	r7, [pc, #372]	@ (200014a8 <atari_cart_main+0x368>)
+20001334:	4a64      	ldr	r2, [pc, #400]	@ (200014c8 <atari_cart_main+0x388>)
+20001336:	783b      	ldrb	r3, [r7, #0]
+20001338:	021b      	lsls	r3, r3, #8
+2000133a:	1899      	adds	r1, r3, r2
+2000133c:	5cd3      	ldrb	r3, [r2, r3]
+2000133e:	468b      	mov	fp, r1
+20001340:	2b00      	cmp	r3, #0
+20001342:	d15d      	bne.n	20001400 <atari_cart_main+0x2c0>
+20001344:	232e      	movs	r3, #46	@ 0x2e
+20001346:	5ccb      	ldrb	r3, [r1, r3]
+20001348:	2b00      	cmp	r3, #0
+2000134a:	d054      	beq.n	200013f6 <atari_cart_main+0x2b6>
+2000134c:	312e      	adds	r1, #46	@ 0x2e
+2000134e:	a848      	add	r0, sp, #288	@ 0x120
+20001350:	f000 ff8e 	bl	20002270 <__strcpy_veneer>
+20001354:	a848      	add	r0, sp, #288	@ 0x120
+20001356:	f000 ff83 	bl	20002260 <__strlen_veneer>
+2000135a:	2190      	movs	r1, #144	@ 0x90
+2000135c:	466a      	mov	r2, sp
+2000135e:	0049      	lsls	r1, r1, #1
+20001360:	1852      	adds	r2, r2, r1
+20001362:	232f      	movs	r3, #47	@ 0x2f
+20001364:	465e      	mov	r6, fp
+20001366:	4694      	mov	ip, r2
+20001368:	5413      	strb	r3, [r2, r0]
+2000136a:	3601      	adds	r6, #1
+2000136c:	3001      	adds	r0, #1
+2000136e:	0031      	movs	r1, r6
+20001370:	4460      	add	r0, ip
+20001372:	f000 ff7d 	bl	20002270 <__strcpy_veneer>
+20001376:	212e      	movs	r1, #46	@ 0x2e
+20001378:	0030      	movs	r0, r6
+2000137a:	f000 ffb1 	bl	200022e0 <__strrchr_veneer>
+2000137e:	2800      	cmp	r0, #0
+20001380:	d100      	bne.n	20001384 <atari_cart_main+0x244>
+20001382:	e07c      	b.n	2000147e <atari_cart_main+0x33e>
+20001384:	4286      	cmp	r6, r0
+20001386:	d07a      	beq.n	2000147e <atari_cart_main+0x33e>
+20001388:	3001      	adds	r0, #1
+2000138a:	4953      	ldr	r1, [pc, #332]	@ (200014d8 <atari_cart_main+0x398>)
+2000138c:	f000 ff30 	bl	200021f0 <__strcasecmp_veneer>
+20001390:	2800      	cmp	r0, #0
+20001392:	d168      	bne.n	20001466 <atari_cart_main+0x326>
+20001394:	2303      	movs	r3, #3
+20001396:	26fe      	movs	r6, #254	@ 0xfe
+20001398:	707b      	strb	r3, [r7, #1]
+2000139a:	e705      	b.n	200011a8 <atari_cart_main+0x68>
+2000139c:	a808      	add	r0, sp, #32
+2000139e:	f000 ff5f 	bl	20002260 <__strlen_veneer>
+200013a2:	aa08      	add	r2, sp, #32
+200013a4:	4694      	mov	ip, r2
+200013a6:	1e43      	subs	r3, r0, #1
+200013a8:	4463      	add	r3, ip
+200013aa:	e004      	b.n	200013b6 <atari_cart_main+0x276>
+200013ac:	781a      	ldrb	r2, [r3, #0]
+200013ae:	3b01      	subs	r3, #1
+200013b0:	3801      	subs	r0, #1
+200013b2:	2a2f      	cmp	r2, #47	@ 0x2f
+200013b4:	d001      	beq.n	200013ba <atari_cart_main+0x27a>
+200013b6:	2800      	cmp	r0, #0
+200013b8:	d1f8      	bne.n	200013ac <atari_cart_main+0x26c>
+200013ba:	466a      	mov	r2, sp
+200013bc:	2120      	movs	r1, #32
+200013be:	2300      	movs	r3, #0
+200013c0:	1852      	adds	r2, r2, r1
+200013c2:	5413      	strb	r3, [r2, r0]
+200013c4:	e6f0      	b.n	200011a8 <atari_cart_main+0x68>
+200013c6:	2304      	movs	r3, #4
+200013c8:	4942      	ldr	r1, [pc, #264]	@ (200014d4 <atari_cart_main+0x394>)
+200013ca:	4838      	ldr	r0, [pc, #224]	@ (200014ac <atari_cart_main+0x36c>)
+200013cc:	707b      	strb	r3, [r7, #1]
+200013ce:	f000 ff4f 	bl	20002270 <__strcpy_veneer>
+200013d2:	2600      	movs	r6, #0
+200013d4:	e6e8      	b.n	200011a8 <atari_cart_main+0x68>
+200013d6:	2efe      	cmp	r6, #254	@ 0xfe
+200013d8:	d000      	beq.n	200013dc <atari_cart_main+0x29c>
+200013da:	e083      	b.n	200014e4 <atari_cart_main+0x3a4>
+200013dc:	a848      	add	r0, sp, #288	@ 0x120
+200013de:	f000 ff67 	bl	200022b0 <__mount_atr_veneer>
+200013e2:	1e04      	subs	r4, r0, #0
+200013e4:	d01e      	beq.n	20001424 <atari_cart_main+0x2e4>
+200013e6:	4653      	mov	r3, sl
+200013e8:	705c      	strb	r4, [r3, #1]
+200013ea:	2401      	movs	r4, #1
+200013ec:	e6dc      	b.n	200011a8 <atari_cart_main+0x68>
+200013ee:	2301      	movs	r3, #1
+200013f0:	4f2d      	ldr	r7, [pc, #180]	@ (200014a8 <atari_cart_main+0x368>)
+200013f2:	707b      	strb	r3, [r7, #1]
+200013f4:	e6d8      	b.n	200011a8 <atari_cart_main+0x68>
+200013f6:	a908      	add	r1, sp, #32
+200013f8:	a848      	add	r0, sp, #288	@ 0x120
+200013fa:	f000 ff39 	bl	20002270 <__strcpy_veneer>
+200013fe:	e7a9      	b.n	20001354 <atari_cart_main+0x214>
+20001400:	a808      	add	r0, sp, #32
+20001402:	f000 ff2d 	bl	20002260 <__strlen_veneer>
+20001406:	2120      	movs	r1, #32
+20001408:	466a      	mov	r2, sp
+2000140a:	232f      	movs	r3, #47	@ 0x2f
+2000140c:	1852      	adds	r2, r2, r1
+2000140e:	4694      	mov	ip, r2
+20001410:	4659      	mov	r1, fp
+20001412:	5413      	strb	r3, [r2, r0]
+20001414:	3001      	adds	r0, #1
+20001416:	3101      	adds	r1, #1
+20001418:	4460      	add	r0, ip
+2000141a:	f000 ff29 	bl	20002270 <__strcpy_veneer>
+2000141e:	2300      	movs	r3, #0
+20001420:	707b      	strb	r3, [r7, #1]
+20001422:	e6c1      	b.n	200011a8 <atari_cart_main+0x68>
+20001424:	2210      	movs	r2, #16
+20001426:	4924      	ldr	r1, [pc, #144]	@ (200014b8 <atari_cart_main+0x378>)
+20001428:	4820      	ldr	r0, [pc, #128]	@ (200014ac <atari_cart_main+0x36c>)
+2000142a:	f000 ff29 	bl	20002280 <____wrap_memcpy_veneer>
+2000142e:	e7da      	b.n	200013e6 <atari_cart_main+0x2a6>
+20001430:	2280      	movs	r2, #128	@ 0x80
+20001432:	492a      	ldr	r1, [pc, #168]	@ (200014dc <atari_cart_main+0x39c>)
+20001434:	01d2      	lsls	r2, r2, #7
+20001436:	4824      	ldr	r0, [pc, #144]	@ (200014c8 <atari_cart_main+0x388>)
+20001438:	f000 ff22 	bl	20002280 <____wrap_memcpy_veneer>
+2000143c:	e745      	b.n	200012ca <atari_cart_main+0x18a>
+2000143e:	2182      	movs	r1, #130	@ 0x82
+20001440:	0049      	lsls	r1, r1, #1
+20001442:	5a59      	ldrh	r1, [r3, r1]
+20001444:	3a04      	subs	r2, #4
+20001446:	4351      	muls	r1, r2
+20001448:	01c0      	lsls	r0, r0, #7
+2000144a:	1809      	adds	r1, r1, r0
+2000144c:	3191      	adds	r1, #145	@ 0x91
+2000144e:	31ff      	adds	r1, #255	@ 0xff
+20001450:	e6e0      	b.n	20001214 <atari_cart_main+0xd4>
+20001452:	2182      	movs	r1, #130	@ 0x82
+20001454:	0049      	lsls	r1, r1, #1
+20001456:	5a59      	ldrh	r1, [r3, r1]
+20001458:	3a04      	subs	r2, #4
+2000145a:	4351      	muls	r1, r2
+2000145c:	01c0      	lsls	r0, r0, #7
+2000145e:	1809      	adds	r1, r1, r0
+20001460:	3191      	adds	r1, #145	@ 0x91
+20001462:	31ff      	adds	r1, #255	@ 0xff
+20001464:	e704      	b.n	20001270 <atari_cart_main+0x130>
+20001466:	a848      	add	r0, sp, #288	@ 0x120
+20001468:	f000 fee2 	bl	20002230 <__load_file_veneer>
+2000146c:	1e06      	subs	r6, r0, #0
+2000146e:	d0aa      	beq.n	200013c6 <atari_cart_main+0x286>
+20001470:	0003      	movs	r3, r0
+20001472:	3bff      	subs	r3, #255	@ 0xff
+20001474:	425a      	negs	r2, r3
+20001476:	4153      	adcs	r3, r2
+20001478:	3301      	adds	r3, #1
+2000147a:	707b      	strb	r3, [r7, #1]
+2000147c:	e694      	b.n	200011a8 <atari_cart_main+0x68>
+2000147e:	4818      	ldr	r0, [pc, #96]	@ (200014e0 <atari_cart_main+0x3a0>)
+20001480:	e783      	b.n	2000138a <atari_cart_main+0x24a>
+20001482:	2100      	movs	r1, #0
+20001484:	4809      	ldr	r0, [pc, #36]	@ (200014ac <atari_cart_main+0x36c>)
+20001486:	3a94      	subs	r2, #148	@ 0x94
+20001488:	f000 ff02 	bl	20002290 <____wrap_memset_veneer>
+2000148c:	2300      	movs	r3, #0
+2000148e:	707b      	strb	r3, [r7, #1]
+20001490:	e68a      	b.n	200011a8 <atari_cart_main+0x68>
+20001492:	46c0      	nop			@ (mov r8, r8)
+20001494:	fffffddc 	.word	0xfffffddc
+20001498:	3fffffff 	.word	0x3fffffff
+2000149c:	03ffffff 	.word	0x03ffffff
+200014a0:	0003d090 	.word	0x0003d090
+200014a4:	1000cff0 	.word	0x1000cff0
+200014a8:	20005a60 	.word	0x20005a60
+200014ac:	20005a62 	.word	0x20005a62
+200014b0:	1000e0cc 	.word	0x1000e0cc
+200014b4:	20005a61 	.word	0x20005a61
+200014b8:	200362e8 	.word	0x200362e8
+200014bc:	200361e8 	.word	0x200361e8
+200014c0:	20036300 	.word	0x20036300
+200014c4:	20005a64 	.word	0x20005a64
+200014c8:	20005b60 	.word	0x20005b60
+200014cc:	1000d024 	.word	0x1000d024
+200014d0:	2003652c 	.word	0x2003652c
+200014d4:	20026c8c 	.word	0x20026c8c
+200014d8:	1000ce94 	.word	0x1000ce94
+200014dc:	1000e15c 	.word	0x1000e15c
+200014e0:	1000d048 	.word	0x1000d048
+200014e4:	0030      	movs	r0, r6
+200014e6:	f000 fe7b 	bl	200021e0 <__emulate_cartridge_veneer>

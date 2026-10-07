@@ -1,0 +1,1 @@
+PASS: real FatFs two-volume format, virtual libraries, nested directories, long names, reads/writes/sync, persistent ATR handles, missing banks, path bounds

@@ -1,0 +1,27 @@
+Using PICO_SDK_PATH from environment ('/workspace/scratch/a065053e89fe/a8duo-cas/tools/pico-sdk-1.5.1')
+PICO_SDK_PATH is /workspace/scratch/a065053e89fe/a8duo-cas/tools/pico-sdk-1.5.1
+Defaulting PICO_PLATFORM to rp2040 since not specified.
+Defaulting PICO platform compiler to pico_arm_gcc since not specified.
+PICO compiler is pico_arm_gcc
+-- The C compiler identification is GNU 13.2.1
+-- The CXX compiler identification is GNU 13.2.1
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /workspace/scratch/a065053e89fe/a8duo-cas/tools/root/usr/bin/arm-none-eabi-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /workspace/scratch/a065053e89fe/a8duo-cas/tools/root/usr/bin/arm-none-eabi-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- The ASM compiler identification is GNU
+-- Found assembler: /workspace/scratch/a065053e89fe/a8duo-cas/tools/root/usr/bin/arm-none-eabi-gcc
+Build type is Release
+PICO target board is myboard.
+Using board configuration from /workspace/scratch/a065053e89fe/a8duo-cas/firmware/engine/myboard.h
+-- Found Python3: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 (found version "3.12.14") found components: Interpreter 
+TinyUSB available at /workspace/scratch/a065053e89fe/a8duo-cas/tools/pico-sdk-1.5.1/lib/tinyusb/src/portable/raspberrypi/rp2040; enabling build support for USB.
+-- Configuring done (0.4s)
+-- Generating done (0.0s)
+-- Build files have been written to: /workspace/scratch/a065053e89fe/a8duo-cas/build/engine

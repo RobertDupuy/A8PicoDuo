@@ -1,0 +1,126 @@
+
+a8duo-cas/build/engine/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+200008c0 <emulate_OSS_A>:
+200008c0:	22d0      	movs	r2, #208	@ 0xd0
+200008c2:	2380      	movs	r3, #128	@ 0x80
+200008c4:	b5f0      	push	{r4, r5, r6, r7, lr}
+200008c6:	4657      	mov	r7, sl
+200008c8:	464e      	mov	r6, r9
+200008ca:	4645      	mov	r5, r8
+200008cc:	46de      	mov	lr, fp
+200008ce:	0612      	lsls	r2, r2, #24
+200008d0:	051b      	lsls	r3, r3, #20
+200008d2:	b5e0      	push	{r5, r6, r7, lr}
+200008d4:	6153      	str	r3, [r2, #20]
+200008d6:	2380      	movs	r3, #128	@ 0x80
+200008d8:	04db      	lsls	r3, r3, #19
+200008da:	6193      	str	r3, [r2, #24]
+200008dc:	2300      	movs	r3, #0
+200008de:	4698      	mov	r8, r3
+200008e0:	4b30      	ldr	r3, [pc, #192]	@ (200009a4 <emulate_OSS_A+0xe4>)
+200008e2:	4682      	mov	sl, r0
+200008e4:	4699      	mov	r9, r3
+200008e6:	230f      	movs	r3, #15
+200008e8:	2180      	movs	r1, #128	@ 0x80
+200008ea:	2480      	movs	r4, #128	@ 0x80
+200008ec:	2680      	movs	r6, #128	@ 0x80
+200008ee:	20ff      	movs	r0, #255	@ 0xff
+200008f0:	2501      	movs	r5, #1
+200008f2:	2708      	movs	r7, #8
+200008f4:	469c      	mov	ip, r3
+200008f6:	03c9      	lsls	r1, r1, #15
+200008f8:	04a4      	lsls	r4, r4, #18
+200008fa:	03b6      	lsls	r6, r6, #14
+200008fc:	0340      	lsls	r0, r0, #13
+200008fe:	6853      	ldr	r3, [r2, #4]
+20000900:	420b      	tst	r3, r1
+20000902:	d0fc      	beq.n	200008fe <emulate_OSS_A+0x3e>
+20000904:	4223      	tst	r3, r4
+20000906:	d118      	bne.n	2000093a <emulate_OSS_A+0x7a>
+20000908:	2d00      	cmp	r5, #0
+2000090a:	d016      	beq.n	2000093a <emulate_OSS_A+0x7a>
+2000090c:	04dd      	lsls	r5, r3, #19
+2000090e:	6250      	str	r0, [r2, #36]	@ 0x24
+20000910:	0ced      	lsrs	r5, r5, #19
+20000912:	04db      	lsls	r3, r3, #19
+20000914:	d532      	bpl.n	2000097c <emulate_OSS_A+0xbc>
+20000916:	6913      	ldr	r3, [r2, #16]
+20000918:	469b      	mov	fp, r3
+2000091a:	2380      	movs	r3, #128	@ 0x80
+2000091c:	019b      	lsls	r3, r3, #6
+2000091e:	432b      	orrs	r3, r5
+20000920:	464d      	mov	r5, r9
+20000922:	5ceb      	ldrb	r3, [r5, r3]
+20000924:	465d      	mov	r5, fp
+20000926:	035b      	lsls	r3, r3, #13
+20000928:	406b      	eors	r3, r5
+2000092a:	4003      	ands	r3, r0
+2000092c:	61d3      	str	r3, [r2, #28]
+2000092e:	2501      	movs	r5, #1
+20000930:	6853      	ldr	r3, [r2, #4]
+20000932:	420b      	tst	r3, r1
+20000934:	d1fc      	bne.n	20000930 <emulate_OSS_A+0x70>
+20000936:	6290      	str	r0, [r2, #40]	@ 0x28
+20000938:	e7e1      	b.n	200008fe <emulate_OSS_A+0x3e>
+2000093a:	4233      	tst	r3, r6
+2000093c:	d1f8      	bne.n	20000930 <emulate_OSS_A+0x70>
+2000093e:	b29d      	uxth	r5, r3
+20000940:	423b      	tst	r3, r7
+20000942:	d004      	beq.n	2000094e <emulate_OSS_A+0x8e>
+20000944:	2380      	movs	r3, #128	@ 0x80
+20000946:	051b      	lsls	r3, r3, #20
+20000948:	2500      	movs	r5, #0
+2000094a:	6193      	str	r3, [r2, #24]
+2000094c:	e7f0      	b.n	20000930 <emulate_OSS_A+0x70>
+2000094e:	4663      	mov	r3, ip
+20000950:	402b      	ands	r3, r5
+20000952:	469b      	mov	fp, r3
+20000954:	2380      	movs	r3, #128	@ 0x80
+20000956:	051b      	lsls	r3, r3, #20
+20000958:	6153      	str	r3, [r2, #20]
+2000095a:	4663      	mov	r3, ip
+2000095c:	422b      	tst	r3, r5
+2000095e:	d013      	beq.n	20000988 <emulate_OSS_A+0xc8>
+20000960:	230b      	movs	r3, #11
+20000962:	402b      	ands	r3, r5
+20000964:	2b03      	cmp	r3, #3
+20000966:	d012      	beq.n	2000098e <emulate_OSS_A+0xce>
+20000968:	465b      	mov	r3, fp
+2000096a:	2b04      	cmp	r3, #4
+2000096c:	d1df      	bne.n	2000092e <emulate_OSS_A+0x6e>
+2000096e:	4653      	mov	r3, sl
+20000970:	2501      	movs	r5, #1
+20000972:	2b00      	cmp	r3, #0
+20000974:	d012      	beq.n	2000099c <emulate_OSS_A+0xdc>
+20000976:	2302      	movs	r3, #2
+20000978:	4698      	mov	r8, r3
+2000097a:	e7d9      	b.n	20000930 <emulate_OSS_A+0x70>
+2000097c:	6913      	ldr	r3, [r2, #16]
+2000097e:	469b      	mov	fp, r3
+20000980:	4643      	mov	r3, r8
+20000982:	031b      	lsls	r3, r3, #12
+20000984:	195b      	adds	r3, r3, r5
+20000986:	e7cb      	b.n	20000920 <emulate_OSS_A+0x60>
+20000988:	2300      	movs	r3, #0
+2000098a:	4698      	mov	r8, r3
+2000098c:	e7cf      	b.n	2000092e <emulate_OSS_A+0x6e>
+2000098e:	4653      	mov	r3, sl
+20000990:	2501      	movs	r5, #1
+20000992:	2b00      	cmp	r3, #0
+20000994:	d0ef      	beq.n	20000976 <emulate_OSS_A+0xb6>
+20000996:	2301      	movs	r3, #1
+20000998:	4698      	mov	r8, r3
+2000099a:	e7c9      	b.n	20000930 <emulate_OSS_A+0x70>
+2000099c:	3301      	adds	r3, #1
+2000099e:	4698      	mov	r8, r3
+200009a0:	e7c6      	b.n	20000930 <emulate_OSS_A+0x70>
+200009a2:	46c0      	nop			@ (mov r8, r8)
+200009a4:	20005b60 	.word	0x20005b60

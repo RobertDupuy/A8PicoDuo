@@ -1,0 +1,83 @@
+
+a8duo-cas/build/engine/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+20000f88 <emulate_microcalc>:
+20000f88:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+20000f8a:	24d0      	movs	r4, #208	@ 0xd0
+20000f8c:	2380      	movs	r3, #128	@ 0x80
+20000f8e:	4657      	mov	r7, sl
+20000f90:	464e      	mov	r6, r9
+20000f92:	4645      	mov	r5, r8
+20000f94:	46de      	mov	lr, fp
+20000f96:	0624      	lsls	r4, r4, #24
+20000f98:	04db      	lsls	r3, r3, #19
+20000f9a:	b5e0      	push	{r5, r6, r7, lr}
+20000f9c:	61a3      	str	r3, [r4, #24]
+20000f9e:	2380      	movs	r3, #128	@ 0x80
+20000fa0:	051b      	lsls	r3, r3, #20
+20000fa2:	4699      	mov	r9, r3
+20000fa4:	6163      	str	r3, [r4, #20]
+20000fa6:	4b1c      	ldr	r3, [pc, #112]	@ (20001018 <emulate_microcalc+0x90>)
+20000fa8:	2580      	movs	r5, #128	@ 0x80
+20000faa:	469a      	mov	sl, r3
+20000fac:	2380      	movs	r3, #128	@ 0x80
+20000fae:	2780      	movs	r7, #128	@ 0x80
+20000fb0:	26ff      	movs	r6, #255	@ 0xff
+20000fb2:	039b      	lsls	r3, r3, #14
+20000fb4:	2201      	movs	r2, #1
+20000fb6:	2100      	movs	r1, #0
+20000fb8:	4698      	mov	r8, r3
+20000fba:	03ed      	lsls	r5, r5, #15
+20000fbc:	04bf      	lsls	r7, r7, #18
+20000fbe:	0376      	lsls	r6, r6, #13
+20000fc0:	6863      	ldr	r3, [r4, #4]
+20000fc2:	422b      	tst	r3, r5
+20000fc4:	d0fc      	beq.n	20000fc0 <emulate_microcalc+0x38>
+20000fc6:	423b      	tst	r3, r7
+20000fc8:	d115      	bne.n	20000ff6 <emulate_microcalc+0x6e>
+20000fca:	2a00      	cmp	r2, #0
+20000fcc:	d013      	beq.n	20000ff6 <emulate_microcalc+0x6e>
+20000fce:	6266      	str	r6, [r4, #36]	@ 0x24
+20000fd0:	6920      	ldr	r0, [r4, #16]
+20000fd2:	04db      	lsls	r3, r3, #19
+20000fd4:	4683      	mov	fp, r0
+20000fd6:	0348      	lsls	r0, r1, #13
+20000fd8:	4684      	mov	ip, r0
+20000fda:	4650      	mov	r0, sl
+20000fdc:	0cdb      	lsrs	r3, r3, #19
+20000fde:	4463      	add	r3, ip
+20000fe0:	5cc3      	ldrb	r3, [r0, r3]
+20000fe2:	4658      	mov	r0, fp
+20000fe4:	035b      	lsls	r3, r3, #13
+20000fe6:	4043      	eors	r3, r0
+20000fe8:	4033      	ands	r3, r6
+20000fea:	61e3      	str	r3, [r4, #28]
+20000fec:	6863      	ldr	r3, [r4, #4]
+20000fee:	422b      	tst	r3, r5
+20000ff0:	d1fc      	bne.n	20000fec <emulate_microcalc+0x64>
+20000ff2:	62a6      	str	r6, [r4, #40]	@ 0x28
+20000ff4:	e7e4      	b.n	20000fc0 <emulate_microcalc+0x38>
+20000ff6:	4640      	mov	r0, r8
+20000ff8:	4203      	tst	r3, r0
+20000ffa:	d1f7      	bne.n	20000fec <emulate_microcalc+0x64>
+20000ffc:	1c48      	adds	r0, r1, #1
+20000ffe:	2105      	movs	r1, #5
+20001000:	f001 f932 	bl	20002268 <____wrap___aeabi_uidivmod_veneer>
+20001004:	464b      	mov	r3, r9
+20001006:	2904      	cmp	r1, #4
+20001008:	d002      	beq.n	20001010 <emulate_microcalc+0x88>
+2000100a:	2201      	movs	r2, #1
+2000100c:	6163      	str	r3, [r4, #20]
+2000100e:	e7ed      	b.n	20000fec <emulate_microcalc+0x64>
+20001010:	2200      	movs	r2, #0
+20001012:	61a3      	str	r3, [r4, #24]
+20001014:	e7ea      	b.n	20000fec <emulate_microcalc+0x64>
+20001016:	46c0      	nop			@ (mov r8, r8)
+20001018:	20005b60 	.word	0x20005b60

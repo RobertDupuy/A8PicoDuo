@@ -1,0 +1,157 @@
+
+a8duo-cas/build/baseline/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+20000ac8 <emulate_SIC>:
+20000ac8:	22d0      	movs	r2, #208	@ 0xd0
+20000aca:	2380      	movs	r3, #128	@ 0x80
+20000acc:	b5f0      	push	{r4, r5, r6, r7, lr}
+20000ace:	4645      	mov	r5, r8
+20000ad0:	46de      	mov	lr, fp
+20000ad2:	464e      	mov	r6, r9
+20000ad4:	4657      	mov	r7, sl
+20000ad6:	0612      	lsls	r2, r2, #24
+20000ad8:	051b      	lsls	r3, r3, #20
+20000ada:	b5e0      	push	{r5, r6, r7, lr}
+20000adc:	6153      	str	r3, [r2, #20]
+20000ade:	2380      	movs	r3, #128	@ 0x80
+20000ae0:	04db      	lsls	r3, r3, #19
+20000ae2:	6193      	str	r3, [r2, #24]
+20000ae4:	2301      	movs	r3, #1
+20000ae6:	4698      	mov	r8, r3
+20000ae8:	2300      	movs	r3, #0
+20000aea:	469c      	mov	ip, r3
+20000aec:	4b3e      	ldr	r3, [pc, #248]	@ (20000be8 <emulate_SIC+0x120>)
+20000aee:	b083      	sub	sp, #12
+20000af0:	001e      	movs	r6, r3
+20000af2:	9301      	str	r3, [sp, #4]
+20000af4:	2300      	movs	r3, #0
+20000af6:	9300      	str	r3, [sp, #0]
+20000af8:	2380      	movs	r3, #128	@ 0x80
+20000afa:	2180      	movs	r1, #128	@ 0x80
+20000afc:	2480      	movs	r4, #128	@ 0x80
+20000afe:	2580      	movs	r5, #128	@ 0x80
+20000b00:	20ff      	movs	r0, #255	@ 0xff
+20000b02:	041b      	lsls	r3, r3, #16
+20000b04:	469b      	mov	fp, r3
+20000b06:	03c9      	lsls	r1, r1, #15
+20000b08:	0464      	lsls	r4, r4, #17
+20000b0a:	04ad      	lsls	r5, r5, #18
+20000b0c:	0340      	lsls	r0, r0, #13
+20000b0e:	6853      	ldr	r3, [r2, #4]
+20000b10:	420b      	tst	r3, r1
+20000b12:	d0fc      	beq.n	20000b0e <emulate_SIC+0x46>
+20000b14:	4223      	tst	r3, r4
+20000b16:	d110      	bne.n	20000b3a <emulate_SIC+0x72>
+20000b18:	4667      	mov	r7, ip
+20000b1a:	2f00      	cmp	r7, #0
+20000b1c:	d00d      	beq.n	20000b3a <emulate_SIC+0x72>
+20000b1e:	04db      	lsls	r3, r3, #19
+20000b20:	6250      	str	r0, [r2, #36]	@ 0x24
+20000b22:	0cdb      	lsrs	r3, r3, #19
+20000b24:	5cf3      	ldrb	r3, [r6, r3]
+20000b26:	6917      	ldr	r7, [r2, #16]
+20000b28:	035b      	lsls	r3, r3, #13
+20000b2a:	407b      	eors	r3, r7
+20000b2c:	4003      	ands	r3, r0
+20000b2e:	61d3      	str	r3, [r2, #28]
+20000b30:	6853      	ldr	r3, [r2, #4]
+20000b32:	420b      	tst	r3, r1
+20000b34:	d1fc      	bne.n	20000b30 <emulate_SIC+0x68>
+20000b36:	6290      	str	r0, [r2, #40]	@ 0x28
+20000b38:	e7e9      	b.n	20000b0e <emulate_SIC+0x46>
+20000b3a:	422b      	tst	r3, r5
+20000b3c:	d102      	bne.n	20000b44 <emulate_SIC+0x7c>
+20000b3e:	4647      	mov	r7, r8
+20000b40:	2f00      	cmp	r7, #0
+20000b42:	d12f      	bne.n	20000ba4 <emulate_SIC+0xdc>
+20000b44:	4f29      	ldr	r7, [pc, #164]	@ (20000bec <emulate_SIC+0x124>)
+20000b46:	423b      	tst	r3, r7
+20000b48:	d1e1      	bne.n	20000b0e <emulate_SIC+0x46>
+20000b4a:	465f      	mov	r7, fp
+20000b4c:	423b      	tst	r3, r7
+20000b4e:	d00d      	beq.n	20000b6c <emulate_SIC+0xa4>
+20000b50:	6250      	str	r0, [r2, #36]	@ 0x24
+20000b52:	6913      	ldr	r3, [r2, #16]
+20000b54:	4699      	mov	r9, r3
+20000b56:	464f      	mov	r7, r9
+20000b58:	9b00      	ldr	r3, [sp, #0]
+20000b5a:	035b      	lsls	r3, r3, #13
+20000b5c:	407b      	eors	r3, r7
+20000b5e:	4003      	ands	r3, r0
+20000b60:	61d3      	str	r3, [r2, #28]
+20000b62:	6853      	ldr	r3, [r2, #4]
+20000b64:	420b      	tst	r3, r1
+20000b66:	d1fc      	bne.n	20000b62 <emulate_SIC+0x9a>
+20000b68:	6290      	str	r0, [r2, #40]	@ 0x28
+20000b6a:	e7d0      	b.n	20000b0e <emulate_SIC+0x46>
+20000b6c:	001e      	movs	r6, r3
+20000b6e:	6853      	ldr	r3, [r2, #4]
+20000b70:	420b      	tst	r3, r1
+20000b72:	d1fb      	bne.n	20000b6c <emulate_SIC+0xa4>
+20000b74:	0b73      	lsrs	r3, r6, #13
+20000b76:	b2de      	uxtb	r6, r3
+20000b78:	9f01      	ldr	r7, [sp, #4]
+20000b7a:	9600      	str	r6, [sp, #0]
+20000b7c:	2607      	movs	r6, #7
+20000b7e:	46bc      	mov	ip, r7
+20000b80:	401e      	ands	r6, r3
+20000b82:	03b6      	lsls	r6, r6, #14
+20000b84:	4466      	add	r6, ip
+20000b86:	065f      	lsls	r7, r3, #25
+20000b88:	d527      	bpl.n	20000bda <emulate_SIC+0x112>
+20000b8a:	2780      	movs	r7, #128	@ 0x80
+20000b8c:	053f      	lsls	r7, r7, #20
+20000b8e:	6197      	str	r7, [r2, #24]
+20000b90:	2700      	movs	r7, #0
+20000b92:	46b8      	mov	r8, r7
+20000b94:	069b      	lsls	r3, r3, #26
+20000b96:	d51a      	bpl.n	20000bce <emulate_SIC+0x106>
+20000b98:	2380      	movs	r3, #128	@ 0x80
+20000b9a:	04db      	lsls	r3, r3, #19
+20000b9c:	6153      	str	r3, [r2, #20]
+20000b9e:	2301      	movs	r3, #1
+20000ba0:	469c      	mov	ip, r3
+20000ba2:	e7b4      	b.n	20000b0e <emulate_SIC+0x46>
+20000ba4:	04db      	lsls	r3, r3, #19
+20000ba6:	0cdb      	lsrs	r3, r3, #19
+20000ba8:	469a      	mov	sl, r3
+20000baa:	6250      	str	r0, [r2, #36]	@ 0x24
+20000bac:	6917      	ldr	r7, [r2, #16]
+20000bae:	2380      	movs	r3, #128	@ 0x80
+20000bb0:	46b9      	mov	r9, r7
+20000bb2:	4657      	mov	r7, sl
+20000bb4:	019b      	lsls	r3, r3, #6
+20000bb6:	433b      	orrs	r3, r7
+20000bb8:	464f      	mov	r7, r9
+20000bba:	5cf3      	ldrb	r3, [r6, r3]
+20000bbc:	035b      	lsls	r3, r3, #13
+20000bbe:	407b      	eors	r3, r7
+20000bc0:	4003      	ands	r3, r0
+20000bc2:	61d3      	str	r3, [r2, #28]
+20000bc4:	6853      	ldr	r3, [r2, #4]
+20000bc6:	420b      	tst	r3, r1
+20000bc8:	d1fc      	bne.n	20000bc4 <emulate_SIC+0xfc>
+20000bca:	6290      	str	r0, [r2, #40]	@ 0x28
+20000bcc:	e79f      	b.n	20000b0e <emulate_SIC+0x46>
+20000bce:	2380      	movs	r3, #128	@ 0x80
+20000bd0:	04db      	lsls	r3, r3, #19
+20000bd2:	6193      	str	r3, [r2, #24]
+20000bd4:	2300      	movs	r3, #0
+20000bd6:	469c      	mov	ip, r3
+20000bd8:	e799      	b.n	20000b0e <emulate_SIC+0x46>
+20000bda:	2780      	movs	r7, #128	@ 0x80
+20000bdc:	053f      	lsls	r7, r7, #20
+20000bde:	6157      	str	r7, [r2, #20]
+20000be0:	2701      	movs	r7, #1
+20000be2:	46b8      	mov	r8, r7
+20000be4:	e7d6      	b.n	20000b94 <emulate_SIC+0xcc>
+20000be6:	46c0      	nop			@ (mov r8, r8)
+20000be8:	20005b60 	.word	0x20005b60
+20000bec:	002000e0 	.word	0x002000e0

@@ -1,0 +1,13 @@
+# Sources and provenance
+
+- Original A8PicoCart: https://github.com/robinhedwards/A8PicoCart — exact commit `fb0b36137a969a71b9258841c46676701125699d`; untouched tracked tree included as a compressed tar archive. Baseline for this change is the user's previously working A8Duo HardGame v021 fork, preserved separately. No upstream firmware update was silently substituted.
+- MeanHamster Power Engine: https://meanhamster.com/games/mpe-power-engine-atari-8-bit — inspected 2026-10-07. It advertises standard boot CAS support and still labels the release forthcoming. This establishes the advertised feature, not public code availability or our hardware validation. No MeanHamster source or binary was used in this implementation.
+- a8-pico-sio: https://github.com/woj76/a8-pico-sio — a separate SIO-based project relevant to real cassette/turbo handling. No code imported; this update needs no SIO connection.
+- CAS format: https://a8cas.sourceforge.net/format-cas.html — FUJI chunk layout, data/baud and separate FSK/PWM forms. This implementation supports the decoded standard-record subset, not pulse playback.
+- Atari cassette boot description and BL/C 0.2 attachment: https://atariwiki.org/wiki/Wiki.jsp?page=Boot+from+Cassette — used to cross-check the boot contract and for the independent integration test. The supplied attachment is a raw boot body; the test wraps it explicitly. No downloaded third-party cassette/game image is included in releases.
+- Atari800 7.2.1: https://github.com/atari800/atari800 — test emulator only. Its `emuos/src/boot.s` (AltirraOS, Avery Lee) documents the boot sequence, including final extra record read, boot continuation, CASINI and DOSVEC.
+- Pico SDK 1.5.1: https://github.com/raspberrypi/pico-sdk/tree/1.5.1 — existing dependency retained.
+
+The new runtime's boot sequence follows the permissively licensed AltirraOS source. Its notice is retained in `cassette/runtime.s`: Copyright (C) 2008–2016 Avery Lee; copying and distribution, with or without modification, permitted without royalty provided the notice is preserved; supplied as-is without warranty.
+
+All inherited source notices remain. The original A8PicoCart repository at the recorded revision has no explicit repository-wide license; public access alone does not supply broad permission to redistribute modified firmware or sell a product. This package does not resolve that permission question or grant rights to upstream code, World's Hardest Game assets, or music. Obtain the relevant authors' permission before public/commercial distribution. Existing FatFs, SDK and TinyUSB notices continue to apply; dependency notices are included in `evidence/licenses/`.

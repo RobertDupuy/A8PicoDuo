@@ -1,0 +1,133 @@
+
+a8duo-cas/build/baseline/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+20000350 <emulate_XEGS_64k>:
+20000350:	b5f0      	push	{r4, r5, r6, r7, lr}
+20000352:	4645      	mov	r5, r8
+20000354:	4657      	mov	r7, sl
+20000356:	46de      	mov	lr, fp
+20000358:	464e      	mov	r6, r9
+2000035a:	22d0      	movs	r2, #208	@ 0xd0
+2000035c:	2380      	movs	r3, #128	@ 0x80
+2000035e:	b5e0      	push	{r5, r6, r7, lr}
+20000360:	0612      	lsls	r2, r2, #24
+20000362:	04db      	lsls	r3, r3, #19
+20000364:	b083      	sub	sp, #12
+20000366:	9001      	str	r0, [sp, #4]
+20000368:	6153      	str	r3, [r2, #20]
+2000036a:	2380      	movs	r3, #128	@ 0x80
+2000036c:	051b      	lsls	r3, r3, #20
+2000036e:	6153      	str	r3, [r2, #20]
+20000370:	2301      	movs	r3, #1
+20000372:	4698      	mov	r8, r3
+20000374:	469c      	mov	ip, r3
+20000376:	4b32      	ldr	r3, [pc, #200]	@ (20000440 <emulate_XEGS_64k+0xf0>)
+20000378:	2180      	movs	r1, #128	@ 0x80
+2000037a:	2480      	movs	r4, #128	@ 0x80
+2000037c:	2580      	movs	r5, #128	@ 0x80
+2000037e:	469a      	mov	sl, r3
+20000380:	0018      	movs	r0, r3
+20000382:	03c9      	lsls	r1, r1, #15
+20000384:	0464      	lsls	r4, r4, #17
+20000386:	04ad      	lsls	r5, r5, #18
+20000388:	6853      	ldr	r3, [r2, #4]
+2000038a:	420b      	tst	r3, r1
+2000038c:	d0fc      	beq.n	20000388 <emulate_XEGS_64k+0x38>
+2000038e:	4223      	tst	r3, r4
+20000390:	d114      	bne.n	200003bc <emulate_XEGS_64k+0x6c>
+20000392:	4667      	mov	r7, ip
+20000394:	2f00      	cmp	r7, #0
+20000396:	d011      	beq.n	200003bc <emulate_XEGS_64k+0x6c>
+20000398:	27ff      	movs	r7, #255	@ 0xff
+2000039a:	04db      	lsls	r3, r3, #19
+2000039c:	037f      	lsls	r7, r7, #13
+2000039e:	6257      	str	r7, [r2, #36]	@ 0x24
+200003a0:	0cdb      	lsrs	r3, r3, #19
+200003a2:	5cc3      	ldrb	r3, [r0, r3]
+200003a4:	6916      	ldr	r6, [r2, #16]
+200003a6:	035b      	lsls	r3, r3, #13
+200003a8:	4073      	eors	r3, r6
+200003aa:	403b      	ands	r3, r7
+200003ac:	61d3      	str	r3, [r2, #28]
+200003ae:	6853      	ldr	r3, [r2, #4]
+200003b0:	420b      	tst	r3, r1
+200003b2:	d1fc      	bne.n	200003ae <emulate_XEGS_64k+0x5e>
+200003b4:	23ff      	movs	r3, #255	@ 0xff
+200003b6:	035b      	lsls	r3, r3, #13
+200003b8:	6293      	str	r3, [r2, #40]	@ 0x28
+200003ba:	e7e5      	b.n	20000388 <emulate_XEGS_64k+0x38>
+200003bc:	422b      	tst	r3, r5
+200003be:	d102      	bne.n	200003c6 <emulate_XEGS_64k+0x76>
+200003c0:	4647      	mov	r7, r8
+200003c2:	2f00      	cmp	r7, #0
+200003c4:	d11b      	bne.n	200003fe <emulate_XEGS_64k+0xae>
+200003c6:	26a0      	movs	r6, #160	@ 0xa0
+200003c8:	0436      	lsls	r6, r6, #16
+200003ca:	4233      	tst	r3, r6
+200003cc:	d1dc      	bne.n	20000388 <emulate_XEGS_64k+0x38>
+200003ce:	0018      	movs	r0, r3
+200003d0:	6853      	ldr	r3, [r2, #4]
+200003d2:	420b      	tst	r3, r1
+200003d4:	d1fb      	bne.n	200003ce <emulate_XEGS_64k+0x7e>
+200003d6:	0b43      	lsrs	r3, r0, #13
+200003d8:	2007      	movs	r0, #7
+200003da:	9e01      	ldr	r6, [sp, #4]
+200003dc:	4018      	ands	r0, r3
+200003de:	0340      	lsls	r0, r0, #13
+200003e0:	4450      	add	r0, sl
+200003e2:	2e00      	cmp	r6, #0
+200003e4:	d0d0      	beq.n	20000388 <emulate_XEGS_64k+0x38>
+200003e6:	061b      	lsls	r3, r3, #24
+200003e8:	d41f      	bmi.n	2000042a <emulate_XEGS_64k+0xda>
+200003ea:	2380      	movs	r3, #128	@ 0x80
+200003ec:	04db      	lsls	r3, r3, #19
+200003ee:	6153      	str	r3, [r2, #20]
+200003f0:	2380      	movs	r3, #128	@ 0x80
+200003f2:	051b      	lsls	r3, r3, #20
+200003f4:	6153      	str	r3, [r2, #20]
+200003f6:	2301      	movs	r3, #1
+200003f8:	4698      	mov	r8, r3
+200003fa:	469c      	mov	ip, r3
+200003fc:	e7c4      	b.n	20000388 <emulate_XEGS_64k+0x38>
+200003fe:	27ff      	movs	r7, #255	@ 0xff
+20000400:	037f      	lsls	r7, r7, #13
+20000402:	6257      	str	r7, [r2, #36]	@ 0x24
+20000404:	6916      	ldr	r6, [r2, #16]
+20000406:	46b1      	mov	r9, r6
+20000408:	4e0e      	ldr	r6, [pc, #56]	@ (20000444 <emulate_XEGS_64k+0xf4>)
+2000040a:	4333      	orrs	r3, r6
+2000040c:	4656      	mov	r6, sl
+2000040e:	b29b      	uxth	r3, r3
+20000410:	5cf3      	ldrb	r3, [r6, r3]
+20000412:	464e      	mov	r6, r9
+20000414:	035b      	lsls	r3, r3, #13
+20000416:	4073      	eors	r3, r6
+20000418:	403b      	ands	r3, r7
+2000041a:	61d3      	str	r3, [r2, #28]
+2000041c:	6853      	ldr	r3, [r2, #4]
+2000041e:	420b      	tst	r3, r1
+20000420:	d1fc      	bne.n	2000041c <emulate_XEGS_64k+0xcc>
+20000422:	23ff      	movs	r3, #255	@ 0xff
+20000424:	035b      	lsls	r3, r3, #13
+20000426:	6293      	str	r3, [r2, #40]	@ 0x28
+20000428:	e7ae      	b.n	20000388 <emulate_XEGS_64k+0x38>
+2000042a:	2380      	movs	r3, #128	@ 0x80
+2000042c:	04db      	lsls	r3, r3, #19
+2000042e:	6193      	str	r3, [r2, #24]
+20000430:	2380      	movs	r3, #128	@ 0x80
+20000432:	051b      	lsls	r3, r3, #20
+20000434:	6193      	str	r3, [r2, #24]
+20000436:	2300      	movs	r3, #0
+20000438:	4698      	mov	r8, r3
+2000043a:	469c      	mov	ip, r3
+2000043c:	e7a4      	b.n	20000388 <emulate_XEGS_64k+0x38>
+2000043e:	46c0      	nop			@ (mov r8, r8)
+20000440:	20005b60 	.word	0x20005b60
+20000444:	ffffe000 	.word	0xffffe000

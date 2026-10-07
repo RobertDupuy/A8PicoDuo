@@ -1,0 +1,94 @@
+
+a8duo-cas/build/engine/a8_pico_cart.elf:     file format elf32-littlearm
+
+
+Disassembly of section .boot2:
+
+Disassembly of section .text:
+
+Disassembly of section .data:
+
+20000ce0 <emulate_diamond_express>:
+20000ce0:	22d0      	movs	r2, #208	@ 0xd0
+20000ce2:	2380      	movs	r3, #128	@ 0x80
+20000ce4:	b5f0      	push	{r4, r5, r6, r7, lr}
+20000ce6:	4657      	mov	r7, sl
+20000ce8:	4645      	mov	r5, r8
+20000cea:	46de      	mov	lr, fp
+20000cec:	464e      	mov	r6, r9
+20000cee:	0612      	lsls	r2, r2, #24
+20000cf0:	051b      	lsls	r3, r3, #20
+20000cf2:	b5e0      	push	{r5, r6, r7, lr}
+20000cf4:	6153      	str	r3, [r2, #20]
+20000cf6:	2380      	movs	r3, #128	@ 0x80
+20000cf8:	04db      	lsls	r3, r3, #19
+20000cfa:	6193      	str	r3, [r2, #24]
+20000cfc:	4b21      	ldr	r3, [pc, #132]	@ (20000d84 <emulate_diamond_express+0xa4>)
+20000cfe:	4680      	mov	r8, r0
+20000d00:	469a      	mov	sl, r3
+20000d02:	001d      	movs	r5, r3
+20000d04:	23f0      	movs	r3, #240	@ 0xf0
+20000d06:	2180      	movs	r1, #128	@ 0x80
+20000d08:	2480      	movs	r4, #128	@ 0x80
+20000d0a:	4699      	mov	r9, r3
+20000d0c:	20ff      	movs	r0, #255	@ 0xff
+20000d0e:	3be9      	subs	r3, #233	@ 0xe9
+20000d10:	2701      	movs	r7, #1
+20000d12:	469b      	mov	fp, r3
+20000d14:	03c9      	lsls	r1, r1, #15
+20000d16:	04a4      	lsls	r4, r4, #18
+20000d18:	0340      	lsls	r0, r0, #13
+20000d1a:	6853      	ldr	r3, [r2, #4]
+20000d1c:	420b      	tst	r3, r1
+20000d1e:	d0fc      	beq.n	20000d1a <emulate_diamond_express+0x3a>
+20000d20:	4223      	tst	r3, r4
+20000d22:	d10f      	bne.n	20000d44 <emulate_diamond_express+0x64>
+20000d24:	2f00      	cmp	r7, #0
+20000d26:	d00d      	beq.n	20000d44 <emulate_diamond_express+0x64>
+20000d28:	04db      	lsls	r3, r3, #19
+20000d2a:	6250      	str	r0, [r2, #36]	@ 0x24
+20000d2c:	0cdb      	lsrs	r3, r3, #19
+20000d2e:	5ceb      	ldrb	r3, [r5, r3]
+20000d30:	6916      	ldr	r6, [r2, #16]
+20000d32:	035b      	lsls	r3, r3, #13
+20000d34:	4073      	eors	r3, r6
+20000d36:	4003      	ands	r3, r0
+20000d38:	61d3      	str	r3, [r2, #28]
+20000d3a:	6853      	ldr	r3, [r2, #4]
+20000d3c:	420b      	tst	r3, r1
+20000d3e:	d1fc      	bne.n	20000d3a <emulate_diamond_express+0x5a>
+20000d40:	6290      	str	r0, [r2, #40]	@ 0x28
+20000d42:	e7ea      	b.n	20000d1a <emulate_diamond_express+0x3a>
+20000d44:	2680      	movs	r6, #128	@ 0x80
+20000d46:	03b6      	lsls	r6, r6, #14
+20000d48:	4233      	tst	r3, r6
+20000d4a:	d1f6      	bne.n	20000d3a <emulate_diamond_express+0x5a>
+20000d4c:	b29e      	uxth	r6, r3
+20000d4e:	46b4      	mov	ip, r6
+20000d50:	464e      	mov	r6, r9
+20000d52:	4033      	ands	r3, r6
+20000d54:	4598      	cmp	r8, r3
+20000d56:	d1f0      	bne.n	20000d3a <emulate_diamond_express+0x5a>
+20000d58:	4663      	mov	r3, ip
+20000d5a:	465d      	mov	r5, fp
+20000d5c:	04db      	lsls	r3, r3, #19
+20000d5e:	0cdb      	lsrs	r3, r3, #19
+20000d60:	439d      	bics	r5, r3
+20000d62:	4666      	mov	r6, ip
+20000d64:	2308      	movs	r3, #8
+20000d66:	036d      	lsls	r5, r5, #13
+20000d68:	4455      	add	r5, sl
+20000d6a:	4233      	tst	r3, r6
+20000d6c:	d004      	beq.n	20000d78 <emulate_diamond_express+0x98>
+20000d6e:	2380      	movs	r3, #128	@ 0x80
+20000d70:	051b      	lsls	r3, r3, #20
+20000d72:	2700      	movs	r7, #0
+20000d74:	6193      	str	r3, [r2, #24]
+20000d76:	e7e0      	b.n	20000d3a <emulate_diamond_express+0x5a>
+20000d78:	2380      	movs	r3, #128	@ 0x80
+20000d7a:	051b      	lsls	r3, r3, #20
+20000d7c:	2701      	movs	r7, #1
+20000d7e:	6153      	str	r3, [r2, #20]
+20000d80:	e7db      	b.n	20000d3a <emulate_diamond_express+0x5a>
+20000d82:	46c0      	nop			@ (mov r8, r8)
+20000d84:	20005b60 	.word	0x20005b60

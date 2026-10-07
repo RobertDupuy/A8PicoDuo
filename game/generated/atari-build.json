@@ -1,0 +1,7 @@
+{
+  "boot_bytes": 2432,
+  "boot_sectors": 19,
+  "load_address": "0x2000",
+  "entry": "0x2006",
+  "sha256": "ccdbe1dbf952d813b4baf01029b7da399b875af31d193c218ad29533041ec0c9"
+}
